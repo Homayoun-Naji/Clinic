@@ -7,8 +7,8 @@ const PatientSchema = new mongoose.Schema(
     birth_date: String,
     disease: String,
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-export default mongoose.model.Patient ||
+export default mongoose.models.Patient ||
   mongoose.model("Patient", PatientSchema);

@@ -8,7 +8,7 @@ const DoctorSchema = new mongoose.Schema(
     phone: String,
     email: String,
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-export default mongoose.model.Doctor || mongoose.model("Doctor", DoctorSchema);
+export default mongoose.models.Doctor || mongoose.model("Doctor", DoctorSchema);
