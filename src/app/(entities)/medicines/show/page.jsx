@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import ShowCard from "@/app/components/ShowCard";
+import LoadingSpinner from "@/app/components/LoadingSpinner";
 import axios from "axios";
 
 const medicinesTitle = ["Name", "Description", "Price", "Stock"];
@@ -20,16 +21,20 @@ function medicinesDataGenerator(data) {
 export default function MedicinesShow() {
   const [medicinesData, setMedicinesData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
   const itemsPerPage = 8;
 
   useEffect(() => {
     const fetchMedicines = async () => {
+      setIsLoading(true);
       try {
         const res = await axios.get("http://localhost:3000/api/medicines");
         setMedicinesData(res.data);
       } catch (err) {
         console.error(err);
         setMedicinesData([]);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -58,6 +63,14 @@ export default function MedicinesShow() {
   const handlePageClick = (page) => {
     setCurrentPage(page);
   };
+
+  if (isLoading) {
+    return (
+      <div className="p-8 mt-12">
+        <LoadingSpinner message="Loading medicines..." />
+      </div>
+    );
+  }
 
   return (
     <div className="p-8 mt-12">
