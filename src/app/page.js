@@ -43,11 +43,16 @@ export default function Home() {
       </header>
       <main className="flex flex-col items-center gap-16 p-8">
         <section className="flex flex-col gap-4 md:gap-8 max-w-3xl rounded-2xl py-6 md:py-10 px-6 md:px-10 bg-white text-dark text-center shadow-[0_18px_70px_rgba(4,5,46,0.12)]">
-          <h2 className="text-2xl md:text-4xl font-bold text-secondary">Our vision</h2>
+          <h2 className="text-2xl md:text-4xl font-bold text-secondary">
+            Our vision
+          </h2>
           <p className="leading-6 md:leading-8 lg:leading-9">
-            We are a pharmacy that provides affordable medicines to the people
-            of Homayoun. We are committed to providing high-quality medicines
-            and services to our customers.
+            Our vision is to simplify clinic management through a modern and
+            efficient digital platform. We aim to help healthcare providers
+            manage patients, doctors, and medicines with greater accuracy and
+            less administrative effort. By improving organization and
+            accessibility, we strive to support better healthcare services for
+            everyone.
           </p>
         </section>
 
@@ -60,7 +65,8 @@ export default function Home() {
               Homayoun Clinic FAQ
             </h2>
             <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-[rgba(255,255,255,0.85)]">
-              Answers to common questions about the clinic, medicine management, and patient data.
+              Answers to common questions about the clinic, medicine management,
+              and patient data.
             </p>
           </div>
           <Accordion items={faqItems} />
