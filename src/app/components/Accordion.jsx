@@ -24,7 +24,7 @@ export default function Accordion({
         return (
           <div
             key={index}
-            className="overflow-hidden rounded-3xl border border-[rgba(19,3,85,0.12)] bg-[var(--color-text-light)]/95 shadow-sm"
+            className="overflow-hidden rounded-3xl border border-[rgba(19,3,85,0.12)] bg-(--color-text-light)/95 shadow-sm"
           >
             <button
               id={headerId}
@@ -32,7 +32,7 @@ export default function Accordion({
               type="button"
               onClick={() => toggle(index)}
               aria-expanded={isOpen}
-              className="flex w-full items-center justify-between gap-4 px-5 py-4 text-start text-base font-semibold text-[var(--color-primary)] transition-colors duration-200 hover:text-[var(--color-secondary)]"
+              className="flex w-full items-center justify-between gap-4 px-5 py-4 text-start text-base font-semibold text-primary transition-colors duration-200 hover:text-secondary"
             >
               <span>{item.question}</span>
               <span
@@ -50,7 +50,7 @@ export default function Accordion({
                 isOpen ? "max-h-72 opacity-100" : "max-h-0 opacity-0"
               }`}
             >
-              <div className="px-5 pb-5 text-sm leading-7 text-[var(--color-text-dark)]">
+              <div className="px-5 pb-5 text-sm leading-7 text-dark">
                 {item.answer}
               </div>
             </div>
