@@ -18,8 +18,8 @@ export default function Navbar() {
         </h1>
       </Link>
       <ul className="hidden md:flex md:gap-4 lg:gap-8">
-        <NavbarItem title="Home" />
-        <NavbarItem title="About Us" />
+        <NavbarItem title="Home" href="/" />
+        <NavbarItem title="Reports" href="/reports" />
         <NavbarDropdown title="Doctors" entity={"doctors"} />
         <NavbarDropdown title="Patients" entity={"patients"} />
         <NavbarDropdown title="Medicines" entity={"medicines"} />

@@ -56,7 +56,7 @@ export default function Home() {
           </p>
         </section>
 
-        <section className="w-full max-w-3xl rounded-2xl border border-[rgba(255,255,255,0.12)] bg-[rgba(73,63,187,0.08)] p-6 md:p-8 shadow-[0_20px_60px_rgba(4,5,46,0.12)] backdrop-blur-xl">
+        <section className="w-full max-w-3xl rounded-2xl border border-[rgba(255,255,255,0.12)] bg-[rgba(73,63,187,0.08)] p-12 shadow-[0_20px_60px_rgba(4,5,46,0.12)] backdrop-blur-xl">
           <div className="mb-6 text-center">
             <p className="text-2xl uppercase tracking-[0.32em] text-secondary">
               FAQ
