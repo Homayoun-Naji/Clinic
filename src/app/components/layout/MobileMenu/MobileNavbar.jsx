@@ -1,4 +1,4 @@
-import { IoClose } from "react-icons/io5";
+import { X } from "lucide-react";
 import MobileNavbarItem from "./MobileNavbarItem";
 import { useState } from "react";
 
@@ -13,7 +13,7 @@ export default function MobileNavbar({ isNavbarOpen, setIsNavbarOpen }) {
     >
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Homayoun Clinic</h2>
-        <IoClose
+        <X
           className="text-3xl cursor-pointer"
           onClick={() => setIsNavbarOpen(false)}
         />
@@ -30,14 +30,18 @@ export default function MobileNavbar({ isNavbarOpen, setIsNavbarOpen }) {
           title="Patients"
           isAccordionOpen={isAccordionOpen === "patients"}
           onClick={() => {
-            setAccordionOpen((prev) => (prev === "patients" ? null : "patients"));
+            setAccordionOpen((prev) =>
+              prev === "patients" ? null : "patients",
+            );
           }}
         />
         <MobileNavbarItem
           title="Medicines"
           isAccordionOpen={isAccordionOpen === "medicines"}
           onClick={() => {
-            setAccordionOpen((prev) => (prev === "medicines" ? null : "medicines"));
+            setAccordionOpen((prev) =>
+              prev === "medicines" ? null : "medicines",
+            );
           }}
         />
       </ul>

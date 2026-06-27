@@ -1,6 +1,6 @@
 "use client";
 
-import { CiMenuFries } from "react-icons/ci";
+import { Menu } from "lucide-react";
 import NavbarDropdown from "./NavbarDropdown";
 import NavbarItem from "./NavbarItem";
 import MobileNavbar from "./MobileMenu/MobileNavbar";
@@ -24,7 +24,7 @@ export default function Navbar() {
         <NavbarDropdown title="Patients" entity={"patients"} />
         <NavbarDropdown title="Medicines" entity={"medicines"} />
       </ul>
-      <CiMenuFries
+      <Menu
         className="text-2xl cursor-pointer md:hidden"
         onClick={() => setIsNavbarOpen(true)}
       />

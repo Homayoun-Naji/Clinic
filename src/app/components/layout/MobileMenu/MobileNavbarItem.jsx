@@ -1,4 +1,4 @@
-import { FaCaretDown, FaCaretRight } from "react-icons/fa";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import SubmenuItem from "../SubmenuItem";
 
 export default function MobileNavbarItem({ title, isAccordionOpen, onClick }) {
@@ -7,9 +7,9 @@ export default function MobileNavbarItem({ title, isAccordionOpen, onClick }) {
       <div className="flex justify-between items-center" onClick={onClick}>
         <p className="text-xl font-bold">{title}</p>
         {isAccordionOpen ? (
-          <FaCaretDown className="text-xl" />
+          <ChevronDown className="text-xl" />
         ) : (
-          <FaCaretRight className="text-xl" />
+          <ChevronRight className="text-xl" />
         )}
       </div>
       <div
