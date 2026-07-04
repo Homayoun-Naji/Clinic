@@ -23,11 +23,11 @@ const palette = [
 export default function SpecializationPieChart({ data = [] }) {
   if (!data?.length) {
     return (
-      <div className="rounded-3xl border border-white/10 bg-white/5 p-8 text-center text-slate-300">
-        <p className="font-medium text-white">
+      <div className="rounded-3xl border border-(--color-border) bg-(--color-surface) p-8 text-center text-light shadow-xl shadow-(color:--color-shadow)">
+        <p className="font-medium text-dark">
           No doctor specialization data available yet.
         </p>
-        <p className="mt-2 text-sm text-slate-400">
+        <p className="mt-2 text-sm text-(--color-text-muted)">
           Add doctor records to view specialty distribution.
         </p>
       </div>
@@ -35,13 +35,13 @@ export default function SpecializationPieChart({ data = [] }) {
   }
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-xl shadow-black/10">
+    <div className="rounded-3xl border border-(--color-border) bg-(--color-surface) p-6 shadow-xl shadow-(color:--color-shadow)">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm uppercase tracking-[0.24em] text-slate-400">
+          <p className="text-sm uppercase tracking-[0.24em] text-(--color-text-muted)">
             Doctors by Specialization
           </p>
-          <h2 className="mt-2 text-2xl font-semibold text-white">
+          <h2 className="mt-2 text-2xl font-semibold text-dark">
             Specialty distribution
           </h2>
         </div>
@@ -68,17 +68,17 @@ export default function SpecializationPieChart({ data = [] }) {
                 props?.payload?.specialization ?? name,
               ]}
               contentStyle={{
-                backgroundColor: "#0f172a",
-                borderColor: "rgba(148,163,184,0.18)",
+                backgroundColor: "var(--color-surface)",
+                borderColor: "var(--color-border)",
                 borderRadius: 18,
-                color: "#fff",
+                color: "var(--color-text)",
               }}
             />
             <Legend
               layout="vertical"
               verticalAlign="middle"
               align="right"
-              wrapperStyle={{ color: "#cbd5e1", fontSize: 13 }}
+              wrapperStyle={{ color: "var(--color-text-muted)", fontSize: 13 }}
             />
           </PieChart>
         </ResponsiveContainer>

@@ -3,33 +3,74 @@
 :root {
   --color-primary: #04052e;
   --color-secondary: #493fbb;
-  --color-text-light: #eee;
-  --color-text-dark: #130355;
+  --color-accent: #7c3aed;
+  --color-bg: #04052e;
+  --color-surface: #0f174d;
+  --color-surface-muted: rgba(73, 63, 187, 0.14);
+  --color-card: rgba(255, 255, 255, 0.08);
+  --color-text: #f5f7ff;
+  --color-text-muted: rgba(245, 247, 255, 0.76);
+  --color-text-strong: #ffffff;
+  --color-border: rgba(255, 255, 255, 0.14);
+  --color-shadow: rgba(4, 5, 46, 0.3);
+  --color-input-bg: rgba(255, 255, 255, 0.08);
+  --color-input-border: rgba(255, 255, 255, 0.16);
+  --color-error: #fda4af;
+  --color-success: #86efac;
+}
 
-  --error: rgb(233, 4, 4);
-  --success: rgb(3, 177, 3);
+:root.light {
+  --color-primary: #f5f7ff;
+  --color-secondary: #5b4dff;
+  --color-accent: #4f46e5;
+  --color-bg: #f5f7ff;
+  --color-surface: #ffffff;
+  --color-surface-muted: rgba(91, 77, 255, 0.08);
+  --color-card: #ffffff;
+  --color-text: #10172a;
+  --color-text-muted: #475569;
+  --color-text-strong: #0f172a;
+  --color-border: rgba(15, 23, 42, 0.12);
+  --color-shadow: rgba(15, 23, 42, 0.1);
+  --color-input-bg: #ffffff;
+  --color-input-border: rgba(15, 23, 42, 0.15);
+  --color-error: #b91c1c;
+  --color-success: #15803d;
 }
 
 @theme inline {
   --color-primary: var(--color-primary);
   --color-secondary: var(--color-secondary);
-  --color-dark: var(--color-text-dark);
-  --color-light: var(--color-text-light);
+  --color-dark: var(--color-text-strong);
+  --color-light: var(--color-text);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-} */
+html {
+  color-scheme: dark;
+}
+
+html.light {
+  color-scheme: light;
+}
 
 body {
-  background: var(--color-primary);
-  color: var(--color-text-light);
+  background: var(--color-bg);
+  color: var(--color-text);
   font-family: Arial, Helvetica, sans-serif;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-secondary) 35%, transparent);
+  color: var(--color-text-strong);
 }
 
 .ecg-loader {

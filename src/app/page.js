@@ -42,11 +42,11 @@ export default function Home() {
         />
       </header>
       <main className="flex flex-col items-center gap-16 p-8">
-        <section className="flex flex-col gap-4 md:gap-8 max-w-3xl rounded-2xl py-6 md:py-10 px-6 md:px-10 bg-white text-dark text-center shadow-[0_18px_70px_rgba(4,5,46,0.12)]">
-          <h2 className="text-2xl md:text-4xl font-bold text-secondary">
+        <section className="flex max-w-3xl flex-col gap-4 rounded-3xl border border-(--color-border) bg-(--color-surface) px-6 py-6 text-center shadow-[0_18px_70px_var(--color-shadow)] md:gap-8 md:px-10 md:py-10">
+          <h2 className="text-2xl font-bold text-secondary md:text-4xl">
             Our vision
           </h2>
-          <p className="leading-6 md:leading-8 lg:leading-9">
+          <p className="leading-6 text-light md:leading-8 lg:leading-9">
             Our vision is to simplify clinic management through a modern and
             efficient digital platform. We aim to help healthcare providers
             manage patients, doctors, and medicines with greater accuracy and
@@ -56,15 +56,15 @@ export default function Home() {
           </p>
         </section>
 
-        <section className="w-full max-w-3xl rounded-2xl border border-[rgba(255,255,255,0.12)] bg-[rgba(73,63,187,0.08)] p-12 shadow-[0_20px_60px_rgba(4,5,46,0.12)] backdrop-blur-xl">
+        <section className="w-full max-w-3xl rounded-3xl border border-(--color-border) bg-(--color-surface-muted) p-12 shadow-[0_20px_60px_var(--color-shadow)] backdrop-blur-xl">
           <div className="mb-6 text-center">
             <p className="text-2xl uppercase tracking-[0.32em] text-secondary">
               FAQ
             </p>
-            <h2 className="mt-3 text-3xl font-bold text-light">
+            <h2 className="mt-3 text-3xl font-bold text-dark">
               Homayoun Clinic FAQ
             </h2>
-            <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-[rgba(255,255,255,0.85)]">
+            <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-(--color-text-muted)">
               Answers to common questions about the clinic, medicine management,
               and patient data.
             </p>

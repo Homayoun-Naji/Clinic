@@ -78,7 +78,7 @@ export default function EntityShow({
   return (
     <div className="p-8 mt-12 flex-1">
       {generatedData.length === 0 ? (
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-10 text-center text-white/90 shadow-xl shadow-black/10">
+        <div className="rounded-3xl border border-(--color-border) bg-(--color-surface) p-10 text-center text-light shadow-xl shadow-(color:--color-shadow)">
           <p>No data available.</p>
         </div>
       ) : (
@@ -94,7 +94,7 @@ export default function EntityShow({
               <button
                 onClick={handlePreviousPage}
                 disabled={currentPage === 1}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-600"
+                className="rounded-lg bg-secondary px-4 py-2 text-white transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:bg-(--color-border)"
               >
                 Previous
               </button>
@@ -104,10 +104,10 @@ export default function EntityShow({
                   <button
                     key={index + 1}
                     onClick={() => handlePageClick(index + 1)}
-                    className={`px-3 py-2 rounded-lg ${
+                    className={`rounded-lg px-3 py-2 ${
                       currentPage === index + 1
-                        ? "bg-blue-500 text-white"
-                        : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                        ? "bg-secondary text-white"
+                        : "bg-(--color-surface-muted) text-light hover:bg-(--color-border)"
                     }`}
                   >
                     {index + 1}
@@ -118,7 +118,7 @@ export default function EntityShow({
               <button
                 onClick={handleNextPage}
                 disabled={currentPage === totalPages}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-600"
+                className="rounded-lg bg-secondary px-4 py-2 text-white transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:bg-(--color-border)"
               >
                 Next
               </button>

@@ -4,7 +4,7 @@ import FormRadioBtn from "./FormRadioBtn";
 export default function Form({ fields }) {
   return (
     <form
-      className="flex flex-col w-1/4 gap-2 bg-white p-6 rounded-2xl"
+      className="flex w-full max-w-xl flex-col gap-3 rounded-3xl border border-(--color-border) bg-(--color-surface) p-6 shadow-lg shadow-(color:--color-shadow)"
       action=""
       method="GET"
     >
@@ -27,7 +27,7 @@ export default function Form({ fields }) {
         <FormRadioBtn title="Delete" />
       </div>
       <button
-        className="bg-primary text-light py-2 rounded-md cursor-pointer"
+        className="cursor-pointer rounded-md bg-secondary px-4 py-2 font-medium text-white transition-transform hover:scale-[1.01]"
         type="submit"
       >
         Submit

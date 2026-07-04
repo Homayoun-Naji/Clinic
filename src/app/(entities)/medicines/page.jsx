@@ -14,7 +14,7 @@ const medicinesFormFields = [
 
 export default function Medicines() {
   return (
-    <section className="flex justify-center mt-12 text-dark">
+    <section className="mt-12 flex justify-center px-4 text-light">
       <Form fields={medicinesFormFields} />
     </section>
   );

@@ -1,8 +1,8 @@
-export default function FormRadioBtn({title}) {
+export default function FormRadioBtn({ title }) {
   return (
-    <span>
+    <label className="flex items-center gap-2 text-sm text-light">
       <input type="radio" name="alts" value={title.toLowerCase()} />
-      {title}
-    </span>
+      <span>{title}</span>
+    </label>
   );
 }
