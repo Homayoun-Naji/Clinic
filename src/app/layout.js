@@ -25,7 +25,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased text-sm md:text-lg lg:text-xl relative flex min-h-screen flex-col bg-(--color-bg) text-light transition-colors duration-300`}
       >
-        <ThemeProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Header />
           <div className="flex flex-1 flex-col">{children}</div>
           <Footer />
