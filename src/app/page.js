@@ -39,6 +39,7 @@ export default function Home() {
           width={600}
           height={400}
           alt="doctor image"
+          priority
         />
       </header>
       <main className="flex flex-col items-center gap-16 p-8">

@@ -1,10 +1,11 @@
 import Link from "next/link";
 
-export default function SubmenuItem({ title, route }) {
+export default function SubmenuItem({ title, route, onClick }) {
   return (
     <Link
       className="rounded-lg px-2 py-1 text-sm transition-colors hover:bg-(--color-surface-muted) hover:text-dark"
-      href={`${route}`}
+      href={`/${route}`}
+      onClick={onClick}
     >
       {title}
     </Link>
