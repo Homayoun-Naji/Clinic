@@ -7,10 +7,10 @@ export default function NavbarDropdown({ title, entity }) {
         {title}
       </p>
       <div className="invisible absolute top-[150%] flex flex-col gap-2 rounded-xl border border-(--color-border) bg-(--color-surface) px-4 py-3 text-center text-light opacity-0 shadow-lg shadow-(color:--color-shadow) transition-all duration-300 group-hover:visible group-hover:opacity-100">
-        <SubmenuItem title="Add" route={`/${entity}`} />
-        <SubmenuItem title="Update" route={`/${entity}`} />
-        <SubmenuItem title="Delete" route={`/${entity}`} />
-        <SubmenuItem title="Show" route={`/${entity}/show`} />
+        <SubmenuItem title="Add" route={`${entity}`} />
+        <SubmenuItem title="Update" route={`${entity}`} />
+        <SubmenuItem title="Delete" route={`${entity}`} />
+        <SubmenuItem title="Show" route={`${entity}/show`} />
       </div>
     </li>
   );

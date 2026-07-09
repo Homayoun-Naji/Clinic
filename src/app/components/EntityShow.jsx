@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 import ShowCard from "@/app/components/ShowCard";
 
@@ -20,8 +19,14 @@ export default function EntityShow({
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const res = await axios.get(apiPath);
-        setData(res.data);
+        const response = await fetch(apiPath);
+
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        const responseData = await response.json();
+        setData(responseData);
       } catch (err) {
         console.error(err);
         setData([]);

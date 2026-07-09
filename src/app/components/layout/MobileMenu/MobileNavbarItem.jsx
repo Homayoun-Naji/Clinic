@@ -1,7 +1,12 @@
 import { ChevronDown, ChevronRight } from "lucide-react";
 import SubmenuItem from "../SubmenuItem";
 
-export default function MobileNavbarItem({ title, isAccordionOpen, onClick, onNavClick }) {
+export default function MobileNavbarItem({
+  title,
+  isAccordionOpen,
+  onClick,
+  onNavClick,
+}) {
   return (
     <li className="px-4 py-6">
       <div className="flex justify-between items-center" onClick={onClick}>
@@ -17,10 +22,26 @@ export default function MobileNavbarItem({ title, isAccordionOpen, onClick, onNa
           isAccordionOpen ? "flex" : "hidden"
         }`}
       >
-        <SubmenuItem title="Add" route={`${title.toLowerCase()}`} onClick={onNavClick} />
-        <SubmenuItem title="Update" route={`${title.toLowerCase()}`} onClick={onNavClick} />
-        <SubmenuItem title="Delete" route={`${title.toLowerCase()}`} onClick={onNavClick} />
-        <SubmenuItem title="Show" route={`${title.toLowerCase()}/show`} onClick={onNavClick} />
+        <SubmenuItem
+          title="Add"
+          route={`${title.toLowerCase()}`}
+          onClick={onNavClick}
+        />
+        <SubmenuItem
+          title="Update"
+          route={`${title.toLowerCase()}`}
+          onClick={onNavClick}
+        />
+        <SubmenuItem
+          title="Delete"
+          route={`${title.toLowerCase()}`}
+          onClick={onNavClick}
+        />
+        <SubmenuItem
+          title="Show"
+          route={`${title.toLowerCase()}/show`}
+          onClick={onNavClick}
+        />
       </div>
     </li>
   );
