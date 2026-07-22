@@ -5,7 +5,6 @@ export const metadata = {
 };
 
 const medicinesFormFields = [
-  { title: "ID", name: "id", type: "text", required: true },
   { title: "Name", name: "name", type: "text", required: true },
   { title: "Description", name: "description", type: "text", required: true },
   { title: "Price", name: "price", type: "number", required: true },

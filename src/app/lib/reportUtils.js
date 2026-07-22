@@ -42,13 +42,6 @@ export const buildSpecializationChartData = (doctors = []) => {
 };
 
 export const fetchApiResource = async (path) => {
-  const response = await fetch(path, {
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
-    throw new Error(`Unable to load ${path}: ${response.status}`);
-  }
-
-  return response.json();
+  const { fetchEntities } = await import("@/app/lib/api");
+  return fetchEntities(path);
 };

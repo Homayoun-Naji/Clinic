@@ -28,16 +28,6 @@ export default function MobileNavbarItem({
           onClick={onNavClick}
         />
         <SubmenuItem
-          title="Update"
-          route={`${title.toLowerCase()}`}
-          onClick={onNavClick}
-        />
-        <SubmenuItem
-          title="Delete"
-          route={`${title.toLowerCase()}`}
-          onClick={onNavClick}
-        />
-        <SubmenuItem
           title="Show"
           route={`${title.toLowerCase()}/show`}
           onClick={onNavClick}

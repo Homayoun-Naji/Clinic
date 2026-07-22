@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import ThemeProvider from "./components/theme/ThemeProvider";
+import { ToastProvider } from "./components/ToastProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,9 +27,11 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased text-sm md:text-lg lg:text-xl relative flex min-h-screen flex-col bg-(--color-bg) text-light transition-colors duration-300`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Header />
-          <div className="flex flex-1 flex-col">{children}</div>
-          <Footer />
+          <ToastProvider>
+            <Header />
+            <div className="flex flex-1 flex-col">{children}</div>
+            <Footer />
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>

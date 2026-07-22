@@ -9,6 +9,8 @@ export default function MedicinesShow() {
       apiPath="http://localhost:3000/api/medicines"
       dataTitles={medicinesTitle}
       dataKeys={medicinesKeys}
+      requiredKeys={["name", "description", "price"]}
+      entityName="Medicine"
       loadingMessage="Loading medicines..."
       itemsPerPage={8}
     />

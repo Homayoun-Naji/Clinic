@@ -1,42 +1,22 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 import ShowCard from "@/app/components/ShowCard";
+import { useEntities } from "@/app/lib/useEntities";
 
 export default function EntityShow({
   apiPath,
   dataTitles,
   dataKeys,
+  requiredKeys = [],
+  entityName = "Record",
   loadingMessage = "Loading...",
   itemsPerPage = 8,
 }) {
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data, isLoading, refetch: fetchData } = useEntities(apiPath);
   const [currentPage, setCurrentPage] = useState(1);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch(apiPath);
-
-        if (!response.ok) {
-          throw new Error(`Request failed with status ${response.status}`);
-        }
-
-        const responseData = await response.json();
-        setData(responseData);
-      } catch (err) {
-        console.error(err);
-        setData([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [apiPath]);
+  const [editingId, setEditingId] = useState(null);
 
   const generatedData = useMemo(
     () =>
@@ -50,22 +30,23 @@ export default function EntityShow({
   );
 
   const totalPages = Math.ceil(generatedData.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
+
+  // Clamp the current page during render so it can never exceed the page count.
+  // This replaces a previous useEffect that called setCurrentPage while
+  // currentPage was a dependency — an anti-pattern that risks extra renders.
+  // Deriving during render is the React-recommended way to keep derived state
+  // in sync with props/state without an effect, and the compiler memoizes it.
+  const safePage = Math.min(currentPage, totalPages) || 1;
+  const startIndex = (safePage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentData = generatedData.slice(startIndex, endIndex);
-
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(1);
-    }
-  }, [currentPage, totalPages]);
 
   const handlePreviousPage = () => {
     setCurrentPage((prev) => Math.max(prev - 1, 1));
   };
 
   const handleNextPage = () => {
-    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages || 1));
   };
 
   const handlePageClick = (page) => {
@@ -111,8 +92,8 @@ export default function EntityShow({
     return pages;
   };
 
-  const desktopPageItems = getVisiblePages(totalPages, currentPage, 9);
-  const mobilePageItems = getVisiblePages(totalPages, currentPage, 6);
+  const desktopPageItems = getVisiblePages(totalPages, safePage, 9);
+  const mobilePageItems = getVisiblePages(totalPages, safePage, 6);
 
   if (isLoading) {
     return (
@@ -131,16 +112,31 @@ export default function EntityShow({
       ) : (
         <>
           <div className="grid md:grid-cols-4 gap-6 md:gap-8 mb-8">
-            {currentData.map((item, index) => (
-              <ShowCard key={index} data={item} />
-            ))}
+            {currentData.map((item, index) => {
+              const rawItem = data[startIndex + index];
+              return (
+              <ShowCard
+                key={rawItem._id}
+                data={item}
+                rawItem={rawItem}
+                dataKeys={dataKeys}
+                requiredKeys={requiredKeys}
+                apiPath={apiPath}
+                entityName={entityName}
+                onChanged={fetchData}
+                editingId={editingId}
+                onStartEdit={setEditingId}
+                onFinishEdit={() => setEditingId(null)}
+              />
+              );
+            })}
           </div>
 
           {totalPages > 1 && (
             <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mt-8 md:mt-12">
               <button
                 onClick={handlePreviousPage}
-                disabled={currentPage === 1}
+                disabled={safePage === 1}
                 className="hidden md:block rounded-lg bg-secondary px-4 py-2 text-white transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:bg-(--color-border)"
               >
                 Previous
@@ -160,7 +156,7 @@ export default function EntityShow({
                       key={pageItem}
                       onClick={() => handlePageClick(pageItem)}
                       className={`rounded-lg px-3 py-2 ${
-                        currentPage === pageItem
+                        safePage === pageItem
                           ? "bg-secondary text-white"
                           : "bg-(--color-surface-muted) text-light hover:bg-(--color-border)"
                       }`}
@@ -173,7 +169,7 @@ export default function EntityShow({
 
               <button
                 onClick={handleNextPage}
-                disabled={currentPage === totalPages}
+                disabled={safePage === totalPages}
                 className="hidden md:block rounded-lg bg-secondary px-4 py-2 text-white transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:bg-(--color-border)"
               >
                 Next
@@ -194,7 +190,7 @@ export default function EntityShow({
                         key={pageItem}
                         onClick={() => handlePageClick(pageItem)}
                         className={`rounded-lg px-3 py-2 ${
-                          currentPage === pageItem
+                          safePage === pageItem
                             ? "bg-secondary text-white"
                             : "bg-(--color-surface-muted) text-light hover:bg-(--color-border)"
                         }`}
@@ -207,14 +203,14 @@ export default function EntityShow({
                 <div className="w-full flex justify-between gap-2">
                   <button
                     onClick={handlePreviousPage}
-                    disabled={currentPage === 1}
+                    disabled={safePage === 1}
                     className="rounded-lg bg-secondary w-1/2 px-4 py-2 text-white transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:bg-(--color-border)"
                   >
                     Previous
                   </button>
                   <button
                     onClick={handleNextPage}
-                    disabled={currentPage === totalPages}
+                    disabled={safePage === totalPages}
                     className="rounded-lg bg-secondary w-1/2 px-4 py-2 text-white transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:bg-(--color-border)"
                   >
                     Next

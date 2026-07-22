@@ -4,6 +4,8 @@ export default function FormInput({
   type,
   required,
   placeholder,
+  value,
+  onChange,
 }) {
   return (
     <div className="flex flex-col gap-1">
@@ -19,6 +21,8 @@ export default function FormInput({
         name={name}
         required={required ? true : false}
         placeholder={placeholder}
+        value={value}
+        onChange={onChange}
       />
     </div>
   );

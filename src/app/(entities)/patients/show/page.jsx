@@ -9,6 +9,8 @@ export default function PatientsShow() {
       apiPath="http://localhost:3000/api/patients"
       dataTitles={patientsTitle}
       dataKeys={patientsKeys}
+      requiredKeys={["first_name", "last_name", "birth_date"]}
+      entityName="Patient"
       loadingMessage="Loading patients..."
       itemsPerPage={8}
     />
