@@ -6,11 +6,13 @@ import FormInput from "./FormInput";
 import { useToast } from "./ToastProvider";
 import { ENTITY_CONFIG, mapFormDataToModel, getEntityKeyFromPath } from "@/app/lib/entityConfig";
 import { createEntity } from "@/app/lib/api";
+import { validateField } from "@/app/lib/validation";
 
 export default function Form({ fields }) {
   const pathname = usePathname();
   const { showToast } = useToast();
   const [formData, setFormData] = useState({});
+  const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [entity, setEntity] = useState(null);
 
@@ -33,22 +35,36 @@ export default function Form({ fields }) {
 
   const handleInputChange = (e) => {
     const { name, value, type } = e.target;
-    setFormData((prev) => ({
-      ...prev,
+    const newFormData = {
+      ...formData,
       [name]: type === "number" ? (value === "" ? "" : Number(value)) : value,
-    }));
+    };
+    setFormData(newFormData);
+
+    // Clear error for this field on change
+    if (errors[name]) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[name];
+        return next;
+      });
+    }
   };
 
   const validateForm = () => {
-    const requiredFields = fields.filter((f) => f.required);
-    for (const field of requiredFields) {
-      const value = formData[field.name];
-      if (value === "" || value === undefined || value === null) {
-        showToast("error", `${field.title} is required`);
-        return false;
+    const newErrors = {};
+
+    for (const field of fields) {
+      const raw = formData[field.name];
+      const modelKey = ENTITY_CONFIG[entity]?.fieldMapping[field.name] || field.name;
+      const result = validateField(modelKey, raw, { required: field.required, entity });
+      if (!result.ok) {
+        newErrors[field.name] = result.error;
       }
     }
-    return true;
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const getApiPath = () => {
@@ -89,8 +105,25 @@ export default function Form({ fields }) {
         initialData[field.name] = "";
       });
       setFormData(initialData);
+      setErrors({});
     } catch (error) {
-      showToast("error", error.message);
+      if (error.fieldErrors) {
+        // Map server-side field errors to form field names using the entity's
+        // field mapping (model key -> form key).
+        const fieldMapping = ENTITY_CONFIG[entity].fieldMapping;
+        const reverseMapping = {};
+        for (const [formKey, modelKey] of Object.entries(fieldMapping)) {
+          reverseMapping[modelKey] = formKey;
+        }
+        const serverErrors = {};
+        for (const [modelKey, msg] of Object.entries(error.fieldErrors)) {
+          const formKey = reverseMapping[modelKey] || modelKey;
+          serverErrors[formKey] = msg;
+        }
+        setErrors(serverErrors);
+      } else {
+        showToast("error", error.message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -116,10 +149,10 @@ export default function Form({ fields }) {
             title={field.title}
             name={field.name}
             type={field.type}
-            required={field.required}
             placeholder={field.placeholder}
             value={formData[field.name] || ""}
             onChange={handleInputChange}
+            error={errors[field.name]}
           />
         );
       })}

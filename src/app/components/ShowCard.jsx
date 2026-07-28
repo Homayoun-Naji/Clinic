@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import { useToast } from "./ToastProvider";
 import { updateEntity, deleteEntity } from "@/app/lib/api";
+import { getFieldTitle } from "@/app/lib/entityConfig";
+import { validateField } from "@/app/lib/validation";
 import Tooltip from "./Tooltip";
 
 export default function ShowCard({
@@ -21,10 +23,16 @@ export default function ShowCard({
   const { showToast } = useToast();
   const isEditing = editingId === rawItem._id;
   const [editValues, setEditValues] = useState({});
+  const [errors, setErrors] = useState({});
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showBlockedModal, setShowBlockedModal] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Derive entity key from apiPath (e.g. "/api/doctors" -> "doctors").
+  // Use the last path segment so absolute URLs (http://host/api/medicines)
+  // and relative paths resolve to the same entity key.
+  const entityKey = apiPath.split("/").filter(Boolean).pop() || "";
 
   useEffect(() => {
     if (isEditing && Object.keys(editValues).length === 0) {
@@ -55,19 +63,36 @@ export default function ShowCard({
   const cancelEdit = () => {
     onFinishEdit();
     setEditValues({});
+    setErrors({});
   };
 
   const handleEditChange = (key, value) => {
     setEditValues((prev) => ({ ...prev, [key]: value }));
+    // Clear error for this field on change
+    if (errors[key]) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      });
+    }
   };
 
   const handleConfirm = async () => {
+    const newErrors = {};
+
     for (const key of requiredKeys) {
       const value = editValues[key];
-      if (value === "" || value === undefined || value === null) {
-        showToast("error", `${key.replace(/_/g, " ")} is required`);
-        return;
+      const result = validateField(key, value, { required: true, entity: entityKey });
+      if (!result.ok) {
+        const title = getFieldTitle(entityKey, key);
+        newErrors[key] = `${title}: ${result.error}`;
       }
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
     }
 
     setIsSaving(true);
@@ -77,9 +102,16 @@ export default function ShowCard({
       showToast("success", `${entityName} updated successfully`);
       onFinishEdit();
       setEditValues({});
+      setErrors({});
       onChanged?.();
     } catch (error) {
-      showToast("error", error.message);
+      if (error.fieldErrors) {
+        // Map server-side field errors to inline errors. ShowCard uses
+        // model keys directly (no kebab-case mapping), so use them as-is.
+        setErrors(error.fieldErrors);
+      } else {
+        showToast("error", error.message);
+      }
     } finally {
       setIsSaving(false);
     }
@@ -107,14 +139,21 @@ export default function ShowCard({
           <div key={index} className="text-sm text-light">
             <span className="font-semibold text-dark">{item.title}</span>
             {isEditing ? (
-              <input
-                type="text"
-                value={editValues[key] ?? ""}
-                onChange={(e) => handleEditChange(key, e.target.value)}
-                className="mt-1 w-full rounded-md border border-(--color-border) bg-(--color-surface) px-2 py-1 text-dark outline-none focus:border-secondary"
-              />
+              <div className="flex flex-col gap-1">
+                <input
+                  type="text"
+                  value={editValues[key] ?? ""}
+                  onChange={(e) => handleEditChange(key, e.target.value)}
+                  className={`mt-1 w-full rounded-md border bg-(--color-surface) px-2 py-1 text-dark outline-none focus:border-secondary ${
+                    errors[key] ? "border-red-500" : "border-(--color-border)"
+                  }`}
+                />
+                {errors[key] && (
+                  <span className="text-xs text-red-500">{errors[key]}</span>
+                )}
+              </div>
             ) : (
-              <span>: {item.value}</span>
+            <span>: {item.value === undefined || item.value === null || item.value === "" ? "__" : item.value}</span>
             )}
           </div>
         );
