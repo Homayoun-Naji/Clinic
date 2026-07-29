@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   /* config options here */
+  allowedDevOrigins: ["192.168.100.231"],
   reactCompiler: true,
   turbopack: {
     // `api.js` is imported by both client components (fetch helpers) and server

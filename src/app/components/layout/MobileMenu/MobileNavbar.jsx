@@ -1,6 +1,7 @@
 import { X } from "lucide-react";
 import MobileNavbarItem from "./MobileNavbarItem";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 export default function MobileNavbar({ isNavbarOpen, setIsNavbarOpen }) {
   const [isAccordionOpen, setAccordionOpen] = useState(null);
@@ -9,28 +10,28 @@ export default function MobileNavbar({ isNavbarOpen, setIsNavbarOpen }) {
     if (isNavbarOpen) {
       // Store the current scroll position
       const scrollY = window.scrollY;
-      
+
       // Apply scroll lock: prevent body scrolling
       document.body.style.overflow = "hidden";
       document.body.style.position = "fixed";
       document.body.style.top = `-${scrollY}px`;
       document.body.style.width = "100%";
-      
+
       // Store scroll position for restoration
       document.body.dataset.scrollY = scrollY.toString();
     } else {
       // Restore scroll position
       const scrollY = parseInt(document.body.dataset.scrollY || "0", 10);
-      
+
       // Remove scroll lock styles
       document.body.style.overflow = "";
       document.body.style.position = "";
       document.body.style.top = "";
       document.body.style.width = "";
-      
+
       // Restore scroll position
       window.scrollTo(0, scrollY);
-      
+
       // Clean up data attribute
       delete document.body.dataset.scrollY;
     }
@@ -56,17 +57,26 @@ export default function MobileNavbar({ isNavbarOpen, setIsNavbarOpen }) {
       }`}
     >
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-dark">
-          Homayoun Clinic
-        </h2>
+        <h2 className="text-2xl font-bold text-dark">Homayoun Clinic</h2>
         <X
           className="cursor-pointer text-3xl text-light"
           onClick={() => setIsNavbarOpen(false)}
         />
       </div>
-      <ul className="p-12">
+      <ul className="mt-4">
+        <MobileNavbarItem
+          title="Home"
+          route="/"
+          onNavClick={() => setIsNavbarOpen(false)}
+        />
+        <MobileNavbarItem
+          title="Reports"
+          route="/reports"
+          onNavClick={() => setIsNavbarOpen(false)}
+        />
         <MobileNavbarItem
           title="Doctors"
+          route="/doctors"
           isAccordionOpen={isAccordionOpen === "doctors"}
           onClick={() => {
             setAccordionOpen((prev) => (prev === "doctors" ? null : "doctors"));
@@ -75,6 +85,7 @@ export default function MobileNavbar({ isNavbarOpen, setIsNavbarOpen }) {
         />
         <MobileNavbarItem
           title="Patients"
+          route="/patients"
           isAccordionOpen={isAccordionOpen === "patients"}
           onClick={() => {
             setAccordionOpen((prev) =>
@@ -85,6 +96,7 @@ export default function MobileNavbar({ isNavbarOpen, setIsNavbarOpen }) {
         />
         <MobileNavbarItem
           title="Medicines"
+          route="/medicines"
           isAccordionOpen={isAccordionOpen === "medicines"}
           onClick={() => {
             setAccordionOpen((prev) =>

@@ -6,7 +6,7 @@ const patientsKeys = ["first_name", "last_name", "birth_date", "disease"];
 export default function PatientsShow() {
   return (
     <EntityShow
-      apiPath="http://localhost:3000/api/patients"
+      apiPath="/api/patients"
       dataTitles={patientsTitle}
       dataKeys={patientsKeys}
       requiredKeys={["first_name", "last_name", "birth_date"]}

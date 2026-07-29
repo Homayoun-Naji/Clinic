@@ -12,7 +12,7 @@ export async function connectToDB() {
     try {
         await mongoose.connect(uri, {dbName: "Clinic_db"})
         isConnected = true
-        console.log("Connected successfully!");
+        // console.log("Connected successfully!");
     } catch (error) {
         console.error(error)
         process.exit(1)

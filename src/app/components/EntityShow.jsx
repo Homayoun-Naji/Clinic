@@ -127,7 +127,7 @@ export default function EntityShow({
         </div>
       ) : (
         <>
-          <div className="grid md:grid-cols-4 gap-6 md:gap-8 mb-8">
+          <div className="grid md:grid-cols-4 gap-6 md:gap-8">
             {currentData.map((item, index) => {
               const rawItem = filteredData[startIndex + index];
               return (
@@ -149,7 +149,7 @@ export default function EntityShow({
           </div>
 
           {totalPages > 1 && (
-            <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mt-8 md:mt-12">
+            <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mt-6 md:mt-12">
               <button
                 onClick={handlePreviousPage}
                 disabled={safePage === 1}

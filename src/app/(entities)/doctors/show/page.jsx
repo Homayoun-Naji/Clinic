@@ -19,7 +19,7 @@ const doctorsKeys = [
 export default function DoctorsShow() {
   return (
     <EntityShow
-      apiPath="http://localhost:3000/api/doctors"
+      apiPath="/api/doctors"
       dataTitles={doctorsTitle}
       dataKeys={doctorsKeys}
       requiredKeys={["first_name", "last_name", "specialization"]}
