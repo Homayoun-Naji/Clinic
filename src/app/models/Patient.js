@@ -29,7 +29,8 @@ function isValidBirthDate(value) {
 function isValidName(value) {
   if (typeof value !== "string") return false;
   const trimmed = value.trim();
-  if (trimmed.toLowerCase() === "true" || trimmed.toLowerCase() === "false") return false;
+  if (trimmed.toLowerCase() === "true" || trimmed.toLowerCase() === "false")
+    return false;
   return /^[\p{L}\s'-]+$/u.test(trimmed);
 }
 
@@ -54,7 +55,8 @@ const PatientSchema = new mongoose.Schema(
       maxlength: [50, "First name cannot exceed 50 characters"],
       validate: {
         validator: isValidName,
-        message: "First name must contain only letters, spaces, hyphens, or apostrophes",
+        message:
+          "First name must contain only letters, spaces, hyphens, or apostrophes",
       },
     },
     last_name: {
@@ -64,7 +66,8 @@ const PatientSchema = new mongoose.Schema(
       maxlength: [50, "Last name cannot exceed 50 characters"],
       validate: {
         validator: isValidName,
-        message: "Last name must contain only letters, spaces, hyphens, or apostrophes",
+        message:
+          "Last name must contain only letters, spaces, hyphens, or apostrophes",
       },
     },
     birth_date: {
@@ -74,7 +77,8 @@ const PatientSchema = new mongoose.Schema(
       maxlength: [10, "Birth date must be in DD/MM/YYYY format"],
       validate: {
         validator: isValidBirthDate,
-        message: "Birth date must be a valid date in DD/MM/YYYY format (e.g. 11/03/2008)",
+        message:
+          "Birth date must be a valid date in DD/MM/YYYY format (e.g. 11/03/2008)",
       },
     },
     disease: {
@@ -84,7 +88,8 @@ const PatientSchema = new mongoose.Schema(
       maxlength: [200, "Disease cannot exceed 200 characters"],
       validate: {
         validator: isValidName,
-        message: "Disease must contain only letters, spaces, hyphens, or apostrophes",
+        message:
+          "Disease must contain only letters, spaces, hyphens, or apostrophes",
       },
     },
   },

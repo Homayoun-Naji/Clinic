@@ -7,19 +7,9 @@ const { default: mongoose } = require("mongoose");
 function isValidName(value) {
   if (typeof value !== "string") return false;
   const trimmed = value.trim();
-  if (trimmed.toLowerCase() === "true" || trimmed.toLowerCase() === "false") return false;
+  if (trimmed.toLowerCase() === "true" || trimmed.toLowerCase() === "false")
+    return false;
   return /^[\p{L}\s'-]+$/u.test(trimmed);
-}
-
-/**
- * Validates name fields that may also contain numbers (medicine names).
- * Rejects emojis, control chars, symbols. Also rejects boolean words.
- */
-function isValidNameWithNumbers(value) {
-  if (typeof value !== "string") return false;
-  const trimmed = value.trim();
-  if (trimmed.toLowerCase() === "true" || trimmed.toLowerCase() === "false") return false;
-  return /^[\p{L}\p{N}\s'-]+$/u.test(trimmed);
 }
 
 /**
@@ -60,7 +50,8 @@ const DoctorSchema = new mongoose.Schema(
       maxlength: [50, "First name cannot exceed 50 characters"],
       validate: {
         validator: isValidName,
-        message: "First name must contain only letters, spaces, hyphens, or apostrophes",
+        message:
+          "First name must contain only letters, spaces, hyphens, or apostrophes",
       },
     },
     last_name: {
@@ -70,7 +61,8 @@ const DoctorSchema = new mongoose.Schema(
       maxlength: [50, "Last name cannot exceed 50 characters"],
       validate: {
         validator: isValidName,
-        message: "Last name must contain only letters, spaces, hyphens, or apostrophes",
+        message:
+          "Last name must contain only letters, spaces, hyphens, or apostrophes",
       },
     },
     specialization: {
@@ -80,7 +72,8 @@ const DoctorSchema = new mongoose.Schema(
       maxlength: [100, "Specialization cannot exceed 100 characters"],
       validate: {
         validator: isValidName,
-        message: "Specialization must contain only letters, spaces, hyphens, or apostrophes",
+        message:
+          "Specialization must contain only letters, spaces, hyphens, or apostrophes",
       },
     },
     phone: {

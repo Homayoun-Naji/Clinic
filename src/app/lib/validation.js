@@ -44,7 +44,10 @@ export function validateField(key, value, opts = {}) {
   const normalized = normalizeWhitespace(str);
 
   // reject boolean words anywhere
-  if (normalized.toLowerCase() === "true" || normalized.toLowerCase() === "false") {
+  if (
+    normalized.toLowerCase() === "true" ||
+    normalized.toLowerCase() === "false"
+  ) {
     return { ok: false, error: `${key} must not be a boolean value` };
   }
 
@@ -68,7 +71,10 @@ export function validateField(key, value, opts = {}) {
     }
     case "phone": {
       if (!PHONE_REGEX.test(normalized)) {
-        return { ok: false, error: "Phone must be exactly 11 digits starting with 09" };
+        return {
+          ok: false,
+          error: "Phone must be exactly 11 digits starting with 09",
+        };
       }
       break;
     }
@@ -82,7 +88,8 @@ export function validateField(key, value, opts = {}) {
       if (!PRICE_REGEX.test(normalized)) {
         return { ok: false, error: "Price must be a non-negative number" };
       }
-      if (Number(normalized) < 0) return { ok: false, error: "Price cannot be negative" };
+      if (Number(normalized) < 0)
+        return { ok: false, error: "Price cannot be negative" };
       break;
     }
     case "stock": {
@@ -91,7 +98,10 @@ export function validateField(key, value, opts = {}) {
         break;
       }
       if (!STOCK_REGEX.test(normalized)) {
-        return { ok: false, error: "Stock must be a positive integer (1 or greater)" };
+        return {
+          ok: false,
+          error: "Stock must be a positive integer (1 or greater)",
+        };
       }
       break;
     }
@@ -101,29 +111,43 @@ export function validateField(key, value, opts = {}) {
       }
       const [dd, mm, yyyy] = normalized.split("/").map(Number);
       const date = new Date(yyyy, mm - 1, dd);
-      const isValid = date.getFullYear() === yyyy && date.getMonth() === mm - 1 && date.getDate() === dd;
-      if (!isValid) return { ok: false, error: "Birth date is not a valid calendar date" };
+      const isValid =
+        date.getFullYear() === yyyy &&
+        date.getMonth() === mm - 1 &&
+        date.getDate() === dd;
+      if (!isValid)
+        return { ok: false, error: "Birth date is not a valid calendar date" };
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      if (date > today) return { ok: false, error: "Birth date cannot be in the future" };
+      if (date > today)
+        return { ok: false, error: "Birth date cannot be in the future" };
       break;
     }
     case "name": {
       // Allow numbers only for medicines
       if (entity === "medicines") {
         if (!NAME_WITH_NUMBERS_REGEX.test(normalized)) {
-          return { ok: false, error: `${key} must contain only letters, numbers, spaces, hyphens, or apostrophes` };
+          return {
+            ok: false,
+            error: `${key} must contain only letters, numbers, spaces, hyphens, or apostrophes`,
+          };
         }
       } else {
         if (!NAME_REGEX.test(normalized)) {
-          return { ok: false, error: `${key} must contain only letters, spaces, hyphens, or apostrophes` };
+          return {
+            ok: false,
+            error: `${key} must contain only letters, spaces, hyphens, or apostrophes`,
+          };
         }
       }
       break;
     }
     case "description": {
       if (/[\p{Cc}\p{Cf}]/u.test(normalized)) {
-        return { ok: false, error: `${key} contains invalid control characters` };
+        return {
+          ok: false,
+          error: `${key} contains invalid control characters`,
+        };
       }
       break;
     }
@@ -154,12 +178,18 @@ export function normalizeAndValidate(body, requiredKeys, entity = undefined) {
     if (!result.ok) {
       errors[key] = { message: result.error };
     } else {
-      data[key] = typeof value === "string" ? normalizeWhitespace(value) : value;
+      data[key] =
+        typeof value === "string" ? normalizeWhitespace(value) : value;
     }
   }
 
   for (const key of requiredKeys) {
-    if (!(key in body) || body[key] === "" || body[key] === null || body[key] === undefined) {
+    if (
+      !(key in body) ||
+      body[key] === "" ||
+      body[key] === null ||
+      body[key] === undefined
+    ) {
       errors[key] = { message: `${key} is required` };
     }
   }

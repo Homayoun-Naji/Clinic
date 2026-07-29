@@ -7,7 +7,8 @@ const { default: mongoose } = require("mongoose");
 function isValidMedicineName(value) {
   if (typeof value !== "string") return false;
   const trimmed = value.trim();
-  if (trimmed.toLowerCase() === "true" || trimmed.toLowerCase() === "false") return false;
+  if (trimmed.toLowerCase() === "true" || trimmed.toLowerCase() === "false")
+    return false;
   return /^[\p{L}\p{N}\s'-]+$/u.test(trimmed);
 }
 
@@ -32,7 +33,8 @@ const MedicineSchema = new mongoose.Schema(
       maxlength: [50, "Name cannot exceed 50 characters"],
       validate: {
         validator: isValidMedicineName,
-        message: "Name must contain only letters, numbers, spaces, hyphens, or apostrophes",
+        message:
+          "Name must contain only letters, numbers, spaces, hyphens, or apostrophes",
       },
     },
     description: {
@@ -56,7 +58,7 @@ const MedicineSchema = new mongoose.Schema(
       },
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.models.Medicine ||
