@@ -13,6 +13,8 @@ export default function MedicinesShow() {
       entityName="Medicine"
       loadingMessage="Loading medicines..."
       itemsPerPage={8}
+      searchKeys={["name"]}
+      searchPlaceholder="Search by medicine name..."
     />
   );
 }

@@ -26,6 +26,8 @@ export default function DoctorsShow() {
       entityName="Doctor"
       loadingMessage="Loading doctors..."
       itemsPerPage={8}
+      searchKeys={["first_name", "last_name"]}
+      searchPlaceholder="Search by first or last name..."
     />
   );
 }

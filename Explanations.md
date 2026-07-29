@@ -956,9 +956,12 @@ A **generic list/view component** that fetches entities from an API, displays th
 │  - requiredKeys: ["first_name", "last_name", "birth_date"]     │
 │  - entityName: "Patient"                                        │
 │  - itemsPerPage: 8                                              │
+│  - searchKeys: ["first_name", "last_name"] (optional)          │
+│  - searchPlaceholder: "Search by first or last name..."        │
 │                                                                 │
 │  Internal:                                                      │
 │  - useEntities(apiPath) → { data, isLoading, refetch }         │
+│  - useSearch(data, searchTerm, searchKeys) → filteredData     │
 │  - Pagination state (currentPage)                               │
 │  - Editing state (editingId)                                    │
 │  - Transforms raw data → display data                           │
@@ -973,10 +976,12 @@ A **generic list/view component** that fetches entities from an API, displays th
 ```jsx
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
+import SearchInput from "@/app/components/SearchInput";
 import ShowCard from "@/app/components/ShowCard";
 import { useEntities } from "@/app/lib/useEntities";
+import { useSearch } from "@/app/lib/useSearch";
 
 export default function EntityShow({
   apiPath,
@@ -986,6 +991,8 @@ export default function EntityShow({
   entityName = "Record",
   loadingMessage = "Loading...",
   itemsPerPage = 8,
+  searchKeys = [],
+  searchPlaceholder = "Search...",
 }) {
   const { data, isLoading, refetch: fetchData } = useEntities(apiPath);
   const [currentPage, setCurrentPage] = useState(1);
@@ -1327,6 +1334,37 @@ dataTitles = ["First Name", "Last Name", "Birth Date"]
 6. Provides responsive pagination UI
 
 **Configuration via props** makes it work for Doctors, Patients, Medicines without code changes.
+
+## Search Feature
+
+EntityShow supports an optional **client-side real-time search** via two new props:
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `searchKeys` | `string[]` | Field keys to search (e.g. `["first_name", "last_name"]`) |
+| `searchPlaceholder` | `string` | Placeholder text for the search input |
+
+### How it works
+
+1. `SearchInput` (a shared component) renders above the card grid with a magnifying-glass icon and a clear (`×`) button that appears only when text is present.
+2. On every `onChange`, the search term is stored in `searchTerm` state and the page resets to 1.
+3. `useSearch` (in `lib/useSearch.js`) memoizes the filtered list — it only recomputes when `data`, `searchTerm`, or `searchKeys` change.
+4. The filtered list feeds into the existing `generatedData` memo, so pagination and rendering work unchanged.
+
+### Matching rules
+
+- Case-insensitive (`toLowerCase()`).
+- Leading/trailing whitespace trimmed.
+- Uses `startsWith()` (not `includes()`).
+- For multi-field entities (doctors/patients), the term is also compared against the normalized full name (`first_name + " " + last_name`), so `"ali mo"` matches `"Ali Mohammadi"`.
+
+### Entity configuration
+
+| Entity | `searchKeys` | `searchPlaceholder` |
+|--------|-------------|---------------------|
+| Doctors | `["first_name", "last_name"]` | `Search by first or last name...` |
+| Patients | `["first_name", "last_name"]` | `Search by first or last name...` |
+| Medicines | `["name"]` | `Search by medicine name...` |
 
 ---
 

@@ -13,6 +13,8 @@ export default function PatientsShow() {
       entityName="Patient"
       loadingMessage="Loading patients..."
       itemsPerPage={8}
+      searchKeys={["first_name", "last_name"]}
+      searchPlaceholder="Search by first or last name..."
     />
   );
 }

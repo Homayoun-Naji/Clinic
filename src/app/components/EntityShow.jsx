@@ -2,8 +2,10 @@
 
 import { useMemo, useState } from "react";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
+import SearchInput from "@/app/components/SearchInput";
 import ShowCard from "@/app/components/ShowCard";
 import { useEntities } from "@/app/lib/useEntities";
+import { useSearch } from "@/app/lib/useSearch";
 
 export default function EntityShow({
   apiPath,
@@ -13,24 +15,30 @@ export default function EntityShow({
   entityName = "Record",
   loadingMessage = "Loading...",
   itemsPerPage = 8,
+  searchKeys = [],
+  searchPlaceholder = "Search...",
 }) {
   const { data, isLoading, refetch: fetchData } = useEntities(apiPath);
   const [currentPage, setCurrentPage] = useState(1);
   const [editingId, setEditingId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Filter the raw data client-side before generating card rows.
+  // useSearch memoizes so this only recomputes when data/searchTerm/searchKeys change.
+  const filteredData = useSearch(data, searchTerm, searchKeys);
 
   const generatedData = useMemo(
     () =>
-      data.map((item) =>
+      filteredData.map((item) =>
         dataKeys.map((key, index) => ({
           title: dataTitles[index],
           value: item[key],
         })),
       ),
-    [data, dataKeys, dataTitles],
+    [filteredData, dataKeys, dataTitles],
   );
 
   const totalPages = Math.ceil(generatedData.length / itemsPerPage);
-
   // Clamp the current page during render so it can never exceed the page count.
   // This replaces a previous useEffect that called setCurrentPage while
   // currentPage was a dependency — an anti-pattern that risks extra renders.
@@ -104,7 +112,15 @@ export default function EntityShow({
   }
 
   return (
-    <div className="px-8 md:p-8 mt-12 flex-1">
+    <div className="px-8 md:p-8 mt-8 flex-1">
+      <SearchInput
+        value={searchTerm}
+        onChange={(e) => {
+          setSearchTerm(e.target.value);
+          setCurrentPage(1);
+        }}
+        placeholder={searchPlaceholder}
+      />
       {generatedData.length === 0 ? (
         <div className="rounded-3xl border border-(--color-border) bg-(--color-surface) p-10 text-center text-light shadow-xl shadow-(color:--color-shadow)">
           <p>No data available.</p>
@@ -113,21 +129,21 @@ export default function EntityShow({
         <>
           <div className="grid md:grid-cols-4 gap-6 md:gap-8 mb-8">
             {currentData.map((item, index) => {
-              const rawItem = data[startIndex + index];
+              const rawItem = filteredData[startIndex + index];
               return (
-              <ShowCard
-                key={rawItem._id}
-                data={item}
-                rawItem={rawItem}
-                dataKeys={dataKeys}
-                requiredKeys={requiredKeys}
-                apiPath={apiPath}
-                entityName={entityName}
-                onChanged={fetchData}
-                editingId={editingId}
-                onStartEdit={setEditingId}
-                onFinishEdit={() => setEditingId(null)}
-              />
+                <ShowCard
+                  key={rawItem._id}
+                  data={item}
+                  rawItem={rawItem}
+                  dataKeys={dataKeys}
+                  requiredKeys={requiredKeys}
+                  apiPath={apiPath}
+                  entityName={entityName}
+                  onChanged={fetchData}
+                  editingId={editingId}
+                  onStartEdit={setEditingId}
+                  onFinishEdit={() => setEditingId(null)}
+                />
               );
             })}
           </div>
@@ -144,7 +160,8 @@ export default function EntityShow({
 
               <div className="hidden md:flex gap-2 order-first md:order-0">
                 {desktopPageItems.map((pageItem, index) =>
-                  pageItem === "ellipsis-left" || pageItem === "ellipsis-right" ? (
+                  pageItem === "ellipsis-left" ||
+                  pageItem === "ellipsis-right" ? (
                     <span
                       key={`${pageItem}-${index}`}
                       className="rounded-lg px-3 py-2 text-light"
@@ -178,7 +195,8 @@ export default function EntityShow({
               <div className="md:hidden w-full flex flex-col gap-2">
                 <div className="flex gap-1.5 justify-center">
                   {mobilePageItems.map((pageItem, index) =>
-                    pageItem === "ellipsis-left" || pageItem === "ellipsis-right" ? (
+                    pageItem === "ellipsis-left" ||
+                    pageItem === "ellipsis-right" ? (
                       <span
                         key={`${pageItem}-${index}`}
                         className="rounded-lg px-3 py-2 text-light"
