@@ -111,10 +111,12 @@ export default function Form({ fields }) {
         // Map server-side field errors to form field names using the entity's
         // field mapping (model key -> form key).
         const fieldMapping = ENTITY_CONFIG[entity].fieldMapping;
-        const reverseMapping = {};
-        for (const [formKey, modelKey] of Object.entries(fieldMapping)) {
-          reverseMapping[modelKey] = formKey;
-        }
+        const reverseMapping = Object.fromEntries(
+          Object.entries(fieldMapping).map(([formKey, modelKey]) => [
+            modelKey,
+            formKey,
+          ]),
+        );
         const serverErrors = {};
         for (const [modelKey, msg] of Object.entries(error.fieldErrors)) {
           const formKey = reverseMapping[modelKey] || modelKey;
@@ -142,10 +144,10 @@ export default function Form({ fields }) {
       className="flex w-full max-w-xl flex-col gap-3 rounded-3xl border border-(--color-border) bg-(--color-surface) p-6 shadow-lg shadow-(color:--color-shadow)"
       onSubmit={handleSubmit}
     >
-      {fields.map((field, index) => {
+      {fields.map((field) => {
         return (
           <FormInput
-            key={index}
+            key={field.name}
             title={field.title}
             name={field.name}
             type={field.type}

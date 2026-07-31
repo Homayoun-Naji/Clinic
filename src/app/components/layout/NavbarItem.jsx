@@ -5,7 +5,7 @@ export default function NavbarItem({ title, href }) {
     <li>
       <Link
         className="rounded-full px-3 py-2 text-lg font-medium transition-colors hover:bg-(--color-surface-muted) hover:text-dark"
-        href={href}
+        href={`/${href}`}
       >
         {title}
       </Link>

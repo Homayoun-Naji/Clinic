@@ -39,19 +39,19 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import FormInput from "./FormInput";
 import { useToast } from "./ToastProvider";
-import { ENTITY_CONFIG, getEntityKeyFromPath } from "@/app/lib/entityConfig";
+import { ENTITY_CONFIG, getEntityKeyFromPath, mapFormDataToModel } from "@/app/lib/entityConfig";
 import { createEntity } from "@/app/lib/api";
-import { validateEntity, sanitizeFormData } from "@/app/lib/validation";
+import { validateField } from "@/app/lib/validation";
 ```
 
 **Explanation:**
-- `"use client"` - This directive tells Next.js this is a **Client Component**. It runs in the browser, can use hooks (`useState`, `useEffect`), browser APIs, and event handlers. Without this, it would be a Server Component by default (Next.js 13+ App Router default).
-- `usePathname()` - Next.js hook that returns the current URL pathname (e.g., `/doctors`, `/patients`). This is how we determine which entity the form belongs to.
-- `useToast()` - Custom hook from our ToastProvider context for showing notifications.
-- `ENTITY_CONFIG` - Central configuration object mapping entity keys to their API paths, field mappings, and rich field metadata.
-- `getEntityKeyFromPath()` - Extracts entity key from URL pathname.
-- `validateEntity()` - Shared validation utility that checks required fields, types, patterns, and maxLength against entity config metadata.
-- `sanitizeFormData()` - Trims strings, converts number strings, and drops empty values while mapping form keys to model keys.
+|- `"use client"` - This directive tells Next.js this is a **Client Component**. It runs in the browser, can use hooks (`useState`, `useEffect`), browser APIs, and event handlers. Without this, it would be a Server Component by default (Next.js 13+ App Router default).
+|- `usePathname()` - Next.js hook that returns the current URL pathname (e.g., `/doctors`, `/patients`). This is how we determine which entity the form belongs to.
+|- `useToast()` - Custom hook from our ToastProvider context for showing notifications.
+|- `ENTITY_CONFIG` - Central configuration object mapping entity keys to their API paths, field mappings, and rich field metadata.
+|- `getEntityKeyFromPath()` - Extracts entity key from URL pathname.
+|- `mapFormDataToModel()` - Maps form data (kebab-case keys) to model data (snake_case keys), normalizing whitespace and dropping empty values.
+|- `validateField()` - Shared validation utility that checks required fields, types, patterns, and maxLength with entity-specific rules.
 
 **Why this approach?** Instead of creating separate form components for each entity (DoctorForm, PatientForm, MedicineForm), we have ONE generic form driven by configuration. Adding a new entity = adding config, not writing new components.
 
@@ -365,8 +365,8 @@ export default function Form({ fields }) {
 **Form.jsx** is a **generic, reusable form component** that:
 1. Detects entity type from URL
 2. Renders fields from configuration
-3. Validates using shared `validateEntity()` (required, types, patterns, maxLength)
-4. Sanitizes and maps form data to API format via `sanitizeFormData()`
+3. Validates using shared `validateField()` (required, types, patterns, maxLength, entity-specific rules)
+4. Sanitizes and maps form data to API format via `mapFormDataToModel()`
 5. Shows user feedback via toasts + inline field errors
 
 **Why this architecture?** Adding a new entity (e.g., "Appointments") requires:
@@ -750,15 +750,12 @@ export default function ShowCard({
             <span className="font-semibold text-dark">{item.title}</span>
             {isEditing ? (
               <input
-                type={inputType}
+                type="text"
                 value={editValues[key] ?? ""}
                 onChange={(e) => handleEditChange(key, e.target.value)}
-                className={`mt-1 w-full rounded-md border px-2 py-1 text-dark outline-none focus:border-secondary ${
-                  errors[key]
-                    ? "border-red-500 focus:border-red-500"
-                    : "border-(--color-border) bg-(--color-surface)"
+                className={`mt-1 w-full rounded-md border bg-(--color-surface) px-2 py-1 text-dark outline-none focus:border-secondary ${
+                  errors[key] ? "border-red-500" : "border-(--color-border)"
                 }`}
-                maxLength={getFieldMetadata(entityKey)[key]?.maxLength || 500}
               />
             ) : (
             <span>: {item.value === undefined || item.value === null || item.value === "" ? "__" : item.value}</span>
@@ -925,9 +922,9 @@ export default function ShowCard({
 **ShowCard.jsx** is a **feature-complete entity display card** that:
 - Shows read-only data
 - Switches to inline edit mode with correct input types from entity metadata
-- Validates using shared `validateEntityData()` (same rules as create form)
+- Validates using shared `validateField()` (same rules as create form, entity-aware)
 - Shows inline error messages with red borders under each input
-- Sanitizes data via `sanitizeFormData()` before update
+- Sanitizes data via `mapFormDataToModel()` before update
 - Confirms deletions with modal
 - Prevents concurrent edits
 - Communicates with parent via callbacks
@@ -2460,12 +2457,13 @@ export const ENTITY_CONFIG = {
       phone: "phone",
       email: "email",
     },
-    fields: {
-      first_name: { required: true, type: "text", maxLength: 100 },
-      last_name: { required: true, type: "text", maxLength: 100 },
-      specialization: { required: true, type: "text", maxLength: 100 },
-      phone: { required: false, type: "text", maxLength: 20 },
-      email: { required: false, type: "email", maxLength: 255, pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ },
+    requiredFields: ["first_name", "last_name", "specialization", "phone"],
+    duplicateFields: ["first_name", "last_name", "specialization"],
+    requiredFieldTitles: {
+      first_name: "First Name",
+      last_name: "Last Name",
+      specialization: "Specialization",
+      phone: "Phone",
     },
   },
   medicines: {
@@ -2477,11 +2475,12 @@ export const ENTITY_CONFIG = {
       price: "price",
       stock: "stock",
     },
-    fields: {
-      name: { required: true, type: "text", maxLength: 200 },
-      description: { required: true, type: "text", maxLength: 500 },
-      price: { required: true, type: "number", min: 0 },
-      stock: { required: false, type: "number", min: 0, default: 0 },
+    requiredFields: ["name", "description", "price"],
+    duplicateFields: ["name", "description"],
+    requiredFieldTitles: {
+      name: "Name",
+      description: "Description",
+      price: "Price",
     },
   },
   patients: {
@@ -2493,23 +2492,25 @@ export const ENTITY_CONFIG = {
       "birth-date": "birth_date",
       disease: "disease",
     },
-    fields: {
-      first_name: { required: true, type: "text", maxLength: 50 },
-      last_name: { required: true, type: "text", maxLength: 50 },
-      birth_date: { required: true, type: "text", pattern: /^\d{2}\/\d{2}\/\d{4}$/ },
-      disease: { required: false, type: "text", maxLength: 100 },
+    requiredFields: ["first_name", "last_name", "birth_date", "disease"],
+    duplicateFields: ["first_name", "last_name", "birth_date", "disease"],
+    requiredFieldTitles: {
+      first_name: "First Name",
+      last_name: "Last Name",
+      birth_date: "Birth Date",
+      disease: "Disease",
     },
   },
 };
 ```
 
 **Structure per entity:**
-- `apiPath` - REST endpoint
-- `entityName` - Display name (for toasts, modals)
-- `fieldMapping` - **Form key → Model key** (kebab-case → snake_case)
-- `fields` - Rich metadata per model field: `required`, `type`, `maxLength`, `min`, `pattern` (regex), `default`
-
-**Why `fields` instead of `requiredFields`?** The `fields` object replaces the old `requiredFields` array. It serves as the single source of truth for validation rules — both `validation.js` and the page components read from it. Adding/removing a required field now means editing one entry here.
+|- `apiPath` - REST endpoint
+|- `entityName` - Display name (for toasts, modals)
+|- `fieldMapping` - **Form key → Model key** (kebab-case → snake_case)
+|- `requiredFields` - Model keys that must be non-empty before submit
+|- `duplicateFields` - Model keys used for duplicate detection (backend)
+|- `requiredFieldTitles` - Human-readable titles for required fields, used by inline edit validation to show friendly messages instead of raw snake_case keys
 
 ### Block 2: mapFormDataToModel
 
@@ -2548,30 +2549,7 @@ Result: { first_name: "John", last_name: "Doe", phone: "0912 345 6789" }
 // Leading/trailing spaces removed, internal spaces collapsed
 ```
 
-### Block 3: getRequiredFields and getFieldMetadata
-
-```js
-export function getRequiredFields(entityKey) {
-  const config = ENTITY_CONFIG[entityKey];
-  if (!config) return [];
-  return Object.entries(config.fields)
-    .filter(([, meta]) => meta.required)
-    .map(([key]) => key);
-}
-
-export function getFieldMetadata(entityKey) {
-  return ENTITY_CONFIG[entityKey]?.fields || {};
-}
-```
-
-**Explanation:**
-- `getRequiredFields("doctors")` → `["first_name", "last_name", "specialization"]`
-- `getFieldMetadata("doctors")` → `{ first_name: { required: true, type: "text", ... }, ... }`
-- Used by `validation.js` to know which fields to validate and how
-- Used by `ShowCard.jsx` to determine correct input types (`type="number"` for price, etc.)
-- Used by show pages to derive `requiredKeys` from config (no more hardcoding)
-
-### Block 4: getEntityKeyFromPath
+### Block 3: getEntityKeyFromPath and getFieldTitle
 
 ```js
 export function getEntityKeyFromPath(pathname) {
@@ -2580,13 +2558,21 @@ export function getEntityKeyFromPath(pathname) {
   const key = segments[0];
   return ENTITY_CONFIG[key] ? key : null;
 }
+
+export function getFieldTitle(entityKey, modelKey) {
+  const config = ENTITY_CONFIG[entityKey];
+  if (config?.requiredFieldTitles?.[modelKey]) {
+    return config.requiredFieldTitles[modelKey];
+  }
+  return modelKey.replace(/_/g, " ");
+}
 ```
 
 **Explanation:**
-- Splits pathname: `/doctors` → `["doctors"]`
-- `/patients/123` → `["patients", "123"]` → returns `"patients"`
-- Returns `null` if not a known entity
-- Used by `Form.jsx` to detect current entity from URL
+|- `getEntityKeyFromPath("/doctors")` → `"doctors"` - Splits pathname and returns the first segment if it matches a known entity
+|- `getFieldTitle("doctors", "first_name")` → `"First Name"` - Resolves human-readable titles from `requiredFieldTitles` config, falling back to snake_case → Title Case
+|- `getEntityKeyFromPath` is used by `Form.jsx` to detect the current entity from the URL
+|- `getFieldTitle` is used by `ShowCard.jsx` to display friendly field names in inline validation errors
 
 ---
 
@@ -2806,8 +2792,7 @@ export function normalizeAndValidate(body, requiredKeys, entity = undefined) {
 - Collects errors as `{ [fieldKey]: { message: string } }` — matching Mongoose's `ValidationError.errors` structure so `extractValidationMessage` can process both uniformly
 - Checks that all `requiredKeys` are present and non-empty
 - When errors exist, throws a `ValidationError` with `err.errors` keyed by field path — the API handlers use `extractValidationMessage` to extract these into a `{ fieldErrors }` response body for inline display
-- Returns normalized data ready for saving to the database
-- The previous `validatePayload` function was inlined into this function to eliminate an unnecessary intermediate layer
+|- Returns normalized data ready for saving to the database
 
 ## Validation Flow Summary
 
@@ -2952,9 +2937,7 @@ export default nextConfig;
 ## Code Walkthrough
 
 ```js
-import { connectToDB } from "@/app/lib/mongodb";
 import Doctor from "@/app/models/Doctor";
-import { NextResponse } from "next/server";
 import {
   createGetHandler,
   createPostHandler,
@@ -3005,7 +2988,7 @@ export const DELETE = createDeleteHandler(Doctor, "Doctor");
 | Concept | Explanation |
 |---------|-------------|
 | **Next.js Route Handlers** | `export async function GET/POST/PUT/DELETE` in `route.js` |
-| **NextResponse** | Next.js wrapper for Web Response API |
+| **Web Response API** | `Response.json(data, { status })` - standard Web API, no Next.js wrapper needed |
 | **Mongoose Model Methods** | `find`, `create`, `findByIdAndUpdate`, `findByIdAndDelete` |
 | **Factory Pattern for Routes** | Reusable handler generators eliminate boilerplate |
 | **Named Exports** | Each HTTP method exported separately |
@@ -3030,9 +3013,7 @@ Route handler for `/api/medicines` - Identical structure to doctors, different m
 ## Code Walkthrough
 
 ```js
-import { connectToDB } from "@/app/lib/mongodb";
 import Medicine from "@/app/models/Medicine";
-import { NextResponse } from "next/server";
 import {
   createGetHandler,
   createPostHandler,
@@ -3077,9 +3058,7 @@ Route handler for `/api/patients` - Same pattern.
 ## Code Walkthrough
 
 ```
-import { connectToDB } from "@/app/lib/mongodb";
 import Patient from "@/app/models/Patient";
-import { NextResponse } from "next/server";
 import {
   createGetHandler,
   createPostHandler,

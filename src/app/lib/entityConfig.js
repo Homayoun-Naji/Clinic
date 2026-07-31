@@ -10,10 +10,15 @@
  *  - entityName: human-readable singular name used in toasts and errors.
  *  - fieldMapping: form field key (kebab) -> model field key (snake).
  *  - requiredFields: model keys that must be non-empty before submit.
- *  - duplicateFields: model keys used for duplicate detection (backend).
  *  - requiredFieldTitles: human title for each required model key, used
  *    by inline edit validation to show a friendly message instead of
  *    the raw snake_case key.
+ *
+ * NOTE: `duplicateFields` was previously a per-entity key but was never
+ * read anywhere in the codebase. Duplicate detection for all non-Doctor
+ * entities runs through `buildDuplicateQuery` (in api.js), which uses the
+ * `requiredFields` array passed by each route handler. Doctors have
+ * special-cased phone-reuse logic in `api.js`. The field was removed.
  */
 export const ENTITY_CONFIG = {
   doctors: {
@@ -27,7 +32,6 @@ export const ENTITY_CONFIG = {
       email: "email",
     },
     requiredFields: ["first_name", "last_name", "specialization", "phone"],
-    duplicateFields: ["first_name", "last_name", "specialization"],
     requiredFieldTitles: {
       first_name: "First Name",
       last_name: "Last Name",
@@ -45,7 +49,6 @@ export const ENTITY_CONFIG = {
       stock: "stock",
     },
     requiredFields: ["name", "description", "price"],
-    duplicateFields: ["name", "description"],
     requiredFieldTitles: {
       name: "Name",
       description: "Description",
@@ -62,7 +65,6 @@ export const ENTITY_CONFIG = {
       disease: "disease",
     },
     requiredFields: ["first_name", "last_name", "birth_date", "disease"],
-    duplicateFields: ["first_name", "last_name", "birth_date", "disease"],
     requiredFieldTitles: {
       first_name: "First Name",
       last_name: "Last Name",

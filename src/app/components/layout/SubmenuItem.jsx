@@ -4,7 +4,7 @@ export default function SubmenuItem({ title, route, onClick }) {
   return (
     <Link
       className="px-2 py-1 text-sm"
-      href={`${route}`}
+      href={`/${route}`}
       onClick={onClick}
     >
       {title}

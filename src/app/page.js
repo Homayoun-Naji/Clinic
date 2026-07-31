@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Accordion from "./components/Accordion";
+import { Info } from "lucide-react";
 
 const faqItems = [
   {
@@ -32,10 +33,28 @@ const faqItems = [
 export default function Home() {
   return (
     <>
+      <div className="mx-auto mt-8 flex w-full max-w-3xl items-start gap-3 rounded-3xl border border-(--color-border) bg-(--color-surface-muted) p-4 text-sm leading-6 text-light shadow-sm md:p-6 md:text-base md:leading-7">
+        <Info
+          className="mt-0.5 h-5 w-5 shrink-0 text-secondary md:h-6 md:w-6"
+          aria-hidden="true"
+        />
+        <div className="space-y-1">
+          <p className="font-semibold text-dark">
+            You are viewing a live demo of this project.
+          </p>
+          <p>
+            Users can create, edit, and delete data at any time, so the
+            displayed information may change.
+          </p>
+          <p>
+            None of the displayed data represents real people or real records.
+          </p>
+        </div>
+      </div>
       <header className="flex justify-center py-12">
         <Image
-          src="/doctor-image.png"
-          className="rounded-2xl w-64 h-40 md:w-150 md:h-100"
+          src="/doctor-image.webp"
+          className="rounded-2xl w-64 h-40 md:w-auto md:h-auto"
           width={600}
           height={400}
           alt="doctor image"

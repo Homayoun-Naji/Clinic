@@ -136,7 +136,7 @@ export default function ShowCard({
       {data.map((item, index) => {
         const key = dataKeys[index];
         return (
-          <div key={index} className="text-sm text-light">
+          <div key={key} className="text-sm text-light">
             <span className="font-semibold text-dark">{item.title}</span>
             {isEditing ? (
               <div className="flex flex-col gap-1">

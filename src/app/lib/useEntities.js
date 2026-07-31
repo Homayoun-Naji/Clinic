@@ -20,7 +20,7 @@ export function useEntities(apiPath) {
       const responseData = await fetchEntities(apiPath);
       setData(responseData);
     } catch (err) {
-      console.error(err);
+      // console.error(err);
       setError(err);
       setData([]);
     } finally {

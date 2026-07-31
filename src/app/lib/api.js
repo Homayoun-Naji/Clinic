@@ -136,18 +136,19 @@ function buildValidationBody(validationMessage) {
 }
 
 /**
- * were actually provided with a non-empty value. When none of the fields
- * are present we skip the lookup entirely — the model will reject the
- * record before it ever reaches the database.
+ * Builds a MongoDB query object from fields that are actually provided
+ * with a non-empty value. When none of the fields are present we skip
+ * the lookup entirely — the model will reject the record before it ever
+ * reaches the database.
  *
  * @param {object} data - Normalized request body.
- * @param {string[]} duplicateFields - Field keys considered duplicates.
+ * @param {string[]} fields - Field keys considered duplicates.
  * @returns {object|undefined} Mongoose query object or undefined to skip.
  */
-function buildDuplicateQuery(data, duplicateFields) {
+function buildDuplicateQuery(data, fields) {
   const query = {};
   let count = 0;
-  for (const field of duplicateFields) {
+  for (const field of fields) {
     const value = data[field];
     if (value === undefined || value === null || value === "") continue;
     query[field] = value;
@@ -168,7 +169,7 @@ export function createGetHandler(Model, entityName) {
       const docs = await Model.find({});
       return Response.json(docs, { status: 200 });
     } catch (error) {
-      console.error(`GET ${entityName} failed:`, error);
+      // console.error(`GET ${entityName} failed:`, error);
       return Response.json(
         {
           error: `Failed to fetch ${entityName.toLowerCase()}s. Please try again.`,
@@ -261,7 +262,7 @@ export function createPostHandler(
           { status: 400 },
         );
       }
-      console.error(`POST ${entityName} failed:`, error);
+      // console.error(`POST ${entityName} failed:`, error);
       return Response.json(
         {
           error: `Error while creating ${entityName.toLowerCase()}. Please try again.`,
@@ -371,7 +372,7 @@ export function createPutHandler(Model, requiredFields, entityName, normalize) {
       // Remove _id from update data
       const { _id: omitted, ...updateData } = data;
       const updated = await Model.findByIdAndUpdate(_id, updateData, {
-        new: true,
+        returnDocument: "after",
         runValidators: true,
       });
 
@@ -384,7 +385,7 @@ export function createPutHandler(Model, requiredFields, entityName, normalize) {
           { status: 400 },
         );
       }
-      console.error(`PUT ${entityName} failed:`, error);
+      // console.error(`PUT ${entityName} failed:`, error);
       return Response.json(
         {
           error: `Error while updating ${entityName.toLowerCase()}. Please try again.`,
@@ -449,7 +450,7 @@ export function createDeleteHandler(Model, entityName) {
           { status: 400 },
         );
       }
-      console.error(`DELETE ${entityName} failed:`, error);
+      // console.error(`DELETE ${entityName} failed:`, error);
       return Response.json(
         {
           error: `Error while deleting ${entityName.toLowerCase()}. Please try again.`,
