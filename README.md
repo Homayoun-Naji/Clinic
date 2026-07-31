@@ -201,7 +201,7 @@ The same `lib/api.js` module is imported by both client components (for fetch he
 
 ## Screenshots
 
-![Home page screenshot](public/doctor-image.webp)
+![Home page screenshot](public/demo.gif)
 *Add screenshots of the dashboard, entity forms, and reports views here.*
 
 ## Future Improvements
