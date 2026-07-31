@@ -73,6 +73,7 @@ export default function DiseaseBarChart({ data = [] }) {
               tickCount={5}
             />
             <Tooltip
+              cursor={{ fill: "var(--color-accent)", fillOpacity: 0.14 }}
               contentStyle={{
                 backgroundColor: "var(--color-surface)",
                 borderColor: "var(--color-border)",
@@ -80,7 +81,11 @@ export default function DiseaseBarChart({ data = [] }) {
                 color: "var(--color-text)",
               }}
             />
-            <Bar dataKey="count" fill="#7c3aed" radius={[12, 12, 0, 0]} />
+            <Bar
+              dataKey="count"
+              fill="var(--color-accent)"
+              radius={[12, 12, 0, 0]}
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>

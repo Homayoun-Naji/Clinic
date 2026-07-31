@@ -1,7 +1,7 @@
 import Form from "@/app/components/Form";
 
 export const metadata = {
-  title: "Add/Update/Delete Patients",
+  title: "Add Patients",
 };
 
 const patientsFormFields = [

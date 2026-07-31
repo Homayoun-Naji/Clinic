@@ -1,5 +1,9 @@
 import EntityShow from "@/app/components/EntityShow";
 
+export const metadata = {
+  title: "Clinic Doctors",
+};
+
 const doctorsTitle = [
   "First Name",
   "Last Name",

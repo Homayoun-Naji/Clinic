@@ -144,6 +144,12 @@ export default function Form({ fields }) {
       className="flex w-full max-w-xl flex-col gap-3 rounded-3xl border border-(--color-border) bg-(--color-surface) p-6 shadow-lg shadow-(color:--color-shadow)"
       onSubmit={handleSubmit}
     >
+      <h2 className="text-2xl font-semibold text-light">
+        {`Add a ${getEntityName()}`}
+      </h2>
+      <p className="text-light/70">
+        {`Fill out the form below to add a new ${getEntityName().toLowerCase()}.`}
+      </p>
       {fields.map((field) => {
         return (
           <FormInput
