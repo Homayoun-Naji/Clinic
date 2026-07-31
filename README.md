@@ -2,6 +2,10 @@
 
 A modern, full-stack clinic management dashboard built with Next.js 16, MongoDB, and Tailwind CSS. Manage patients, doctors, and medicines with real-time search, inline editing, and analytics reports.
 
+## Live Demo
+
+https://clinic-seven-jade.vercel.app/
+
 ## Features
 
 - **Three entity managers** — Patients, Doctors, Medicines with full CRUD operations
@@ -100,7 +104,7 @@ src/app/
 ### Setup
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/Homayoun-Naji/Clinic.git
 cd clinic
 npm install
 ```

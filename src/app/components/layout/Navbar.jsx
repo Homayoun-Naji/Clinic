@@ -21,7 +21,7 @@ export default function Navbar() {
         </Link>
         <ul className="hidden items-center gap-4 text-light md:flex lg:gap-8">
           <NavbarItem title="Home" href="/" />
-          <NavbarItem title="Reports" href="/reports" />
+          <NavbarItem title="Reports" href="reports" />
           <NavbarDropdown title="Doctors" entity={"doctors"} />
           <NavbarDropdown title="Patients" entity={"patients"} />
           <NavbarDropdown title="Medicines" entity={"medicines"} />
