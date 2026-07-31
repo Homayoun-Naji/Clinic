@@ -8,6 +8,7 @@ import {
   Sector,
   Tooltip,
 } from "recharts";
+import useMediaQuery from "@/app/lib/useMediaQuery";
 
 const palette = [
   "#38bdf8",
@@ -21,6 +22,8 @@ const palette = [
 ];
 
 export default function SpecializationPieChart({ data = [] }) {
+  const isMobile = useMediaQuery("(max-width: 767px)");
+
   if (!data?.length) {
     return (
       <div className="rounded-3xl border border-(--color-border) bg-(--color-surface) p-8 text-center text-light shadow-xl shadow-(color:--color-shadow)">
@@ -33,6 +36,11 @@ export default function SpecializationPieChart({ data = [] }) {
       </div>
     );
   }
+
+  // On mobile, shift the legend below the chart and shrink the pie so they
+  // no longer overlap; the desktop layout stays vertical-right aligned.
+  const innerRadius = isMobile ? 50 : 66;
+  const outerRadius = isMobile ? 94 : 118;
 
   return (
     <div className="rounded-3xl border border-(--color-border) bg-(--color-surface) p-6 shadow-xl shadow-(color:--color-shadow)">
@@ -56,8 +64,8 @@ export default function SpecializationPieChart({ data = [] }) {
               }))}
               dataKey="value"
               nameKey="specialization"
-              innerRadius={66}
-              outerRadius={118}
+              innerRadius={innerRadius}
+              outerRadius={outerRadius}
               paddingAngle={4}
               stroke="transparent"
               shape={(props) => <Sector {...props} />}
@@ -75,10 +83,14 @@ export default function SpecializationPieChart({ data = [] }) {
               }}
             />
             <Legend
-              layout="vertical"
-              verticalAlign="middle"
-              align="right"
-              wrapperStyle={{ color: "var(--color-text-muted)", fontSize: 13 }}
+              layout={isMobile ? "horizontal" : "vertical"}
+              verticalAlign={isMobile ? "bottom" : "middle"}
+              align={isMobile ? "center" : "right"}
+              wrapperStyle={{
+                color: "var(--color-text-muted)",
+                fontSize: isMobile ? 12 : 13,
+                paddingTop: isMobile ? 16 : 0,
+              }}
             />
           </PieChart>
         </ResponsiveContainer>

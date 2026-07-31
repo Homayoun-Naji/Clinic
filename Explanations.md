@@ -3169,10 +3169,197 @@ const patientSchema = new mongoose.Schema({
 - `validate` / `match` catch format errors (invalid dates, bad emails) at the database layer
 
 **Validation layers (defense in depth):**
-1. Client-side: `validation.js` uses `validateField` with entity parameter — immediate UX feedback, entity-specific rules (medicine names allow numbers, doctor/patient names don't)
-2. Server-side: `normalizeAndValidate` in each route's normalizer rejects invalid payloads and normalizes whitespace before any DB operation
-3. Application logic: Doctor-specific duplicate checks in `api.js` enforce phone-reuse rules without relying on DB-level unique indexes
+1. Client-side: `validation.js` uses `validateField` with entity parameter — immediate UX feedback, entity-specific rules (medicine names allow numbers, doctors/patients don't, boolean words rejected)
+2. Server-side: `normalizeAndValidate` in route handlers normalizes whitespace and rejects invalid payloads before any DB operation, returning `{ fieldErrors }` for inline display
+3. Application logic: Doctor-specific duplicate detection in `api.js` enforces phone-reuse rules without DB-level unique indexes
 4. Database: Mongoose schema validators catch anything that slips through, plus `syncIndexes()` keeps the DB index in sync with the schema
+
+---
+
+# lib/useMediaQuery.js
+
+## Purpose
+
+A tiny SSR-safe media-query hook used by the Reports charts to detect narrow
+viewports. It wraps `window.matchMedia` in a `false`-initial-state
+`useState`/`useEffect` pair so the server-rendered markup and the first client
+render never mismatch.
+
+## Code Walkthrough
+
+```jsx
+import { useEffect, useState } from "react";
+
+export default function useMediaQuery(query) {
+  const [matches, setMatches] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia(query);
+
+    const update = () => setMatches(media.matches);
+    media.addEventListener("change", update);
+    update();
+
+    return () => media.removeEventListener("change", update);
+  }, [query]);
+
+  return matches;
+}
+```
+
+**Explanation:**
+- `useState(false)` — starts `false` during SSR so the initial render matches
+  what the server produced. The real value is set inside `useEffect`
+  (client-only), avoiding hydration mismatches.
+- `window.matchMedia(query)` — evaluates the CSS media query string.
+- `update()` — reads the *current* match value and calls `setMatches`.
+  Wrapped in a named function so it doubles as the `"change"` listener — this
+  avoids calling `setState` directly in the effect body (which triggers the
+  `react-hooks/set-state-in-effect` lint rule) while still syncing on mount.
+- `addEventListener("change", update)` — listens for viewport breakpoints
+  being crossed (resize, orientation change, device fold).
+- Cleanup removes the listener on unmount.
+
+**Why not just use Tailwind's `sm:` classes?** Recharts renders an SVG canvas
+where element props (legend position, label rotation, tick font size) must be
+*numbers*, not CSS values. Those props can't be set from a stylesheet, so we
+need JS-level breakpoint detection for chart-specific geometry. The Tailwind
+`sm:` classes handle the surrounding layout; `useMediaQuery` handles the chart
+internals.
+
+---
+
+## Key Concepts Learned
+
+| Concept | Explanation |
+|---------|-------------|
+| **SSR safety** | `useState(false)` initial + `useEffect` set avoids hydration mismatch |
+| **Media Query API** | `window.matchMedia` + `addEventListener("change", …)` for responsive JS logic |
+| **Composition** | Reused by every chart that needs breakpoint-aware geometry |
+
+---
+
+# components/Reports/DiseaseBarChart.jsx
+
+## Purpose
+
+Renders a horizontal-bar-style disease prevalence chart using Recharts
+`BarChart`. Data is built by `buildDiseaseChartData` in `lib/reportUtils.js`
+and passed in as `{ disease, count }[]` sorted by count descending.
+
+## Responsive Problem
+
+On narrow viewports (< 768 px) the chart suffered from three issues:
+1. **Cramped margins** — the desktop margin `{ left: -12, right: 12 }`
+   clipped the leftmost disease labels on a 320 px-wide screen.
+2. **Label overlap** — the `-30°` rotated XAxis ticks ran into each other
+   because there wasn't enough `height` room allocated under the axis.
+3. **Small tick font** — `fontSize: 12` on a 360 px screen left labels
+   barely legible.
+
+## Responsive Solution
+
+A single `useMediaQuery("(max-width: 767px)")` call computes mobile-aware
+props; the desktop values are left untouched so desktop appearance is
+identical to before.
+
+```jsx
+const isMobile = useMediaQuery("(max-width: 767px)");
+
+const tick = {
+  fill: "var(--color-text-muted)",
+  fontSize: isMobile ? 10 : 12,
+};
+
+const margin = isMobile
+  ? { top: 16, right: 4, left: -8, bottom: 20 }
+  : { top: 16, right: 12, left: -12, bottom: 12 };
+
+<XAxis
+  dataKey="disease"
+  tick={tick}
+  angle={isMobile ? -25 : -30}
+  height={isMobile ? 90 : 75}
+/>
+```
+
+**What changed (mobile only):**
+- `fontSize` 12 → 10 — matches the smaller screen pixel density.
+- `angle` `-30` → `-25` — shallower rotation needs less vertical clearance
+  so labels have more breathing room.
+- `height` 75 → 90 — extra space under the axis prevents label clipping.
+- `margin.bottom` 12 → 20 and `margin.right` 12 → 4 — rebalances the
+  chart area so the bars don't get squeezed against the right edge.
+- `tickCount={5}` on `YAxis` — caps Y-axis ticks at 5 so the axis isn't
+  crowded with too many gridlines on mobile.
+
+## Key Concepts Learned
+
+| Concept | Explanation |
+|---------|-------------|
+| **ResponsiveContainer** | Sets width to 100% of parent; height stays fixed via the wrapper div |
+| **JS breakpoint detection** | `useMediaQuery` drives numeric chart props (angle, fontSize, margin) that CSS can't touch |
+| **Desktop preservation** | Mobile values are conditionals; desktop path is a no-op |
+
+---
+
+# components/Reports/SpecializationPieChart.jsx
+
+## Purpose
+
+Renders a donut-style specialization distribution chart using Recharts
+`PieChart`. Data is built by `buildSpecializationChartData` in
+`lib/reportUtils.js` and passed in as `{ specialization, value }[]`. The
+color palette is a fixed array mapped by index.
+
+## Responsive Problem
+
+On narrow viewports the legend overlapped the pie:
+- Desktop legend: `layout="vertical"`, `verticalAlign="middle"`,
+  `align="right"` — this places the legend *inside* the right edge of the
+  chart. When the container shrinks below ~560 px the legend items wrap onto
+  the donut segments, making both unreadable.
+- The pie radii (`innerRadius={66}`, `outerRadius={118}`) were also too large
+  for a narrow container — the donut consumed almost all available width,
+  leaving no room for a horizontal legend.
+
+## Responsive Solution
+
+```jsx
+const isMobile = useMediaQuery("(max-width: 767px)");
+
+const innerRadius = isMobile ? 50 : 66;
+const outerRadius = isMobile ? 94 : 118;
+
+<Legend
+  layout={isMobile ? "horizontal" : "vertical"}
+  verticalAlign={isMobile ? "bottom" : "middle"}
+  align={isMobile ? "center" : "right"}
+  wrapperStyle={{
+    color: "var(--color-text-muted)",
+    fontSize: isMobile ? 12 : 13,
+    paddingTop: isMobile ? 16 : 0,
+  }}
+/>
+```
+
+**What changed (mobile only):**
+- **Legend repositioned** — moves from right-aligned-vertical to
+  bottom-centered-horizontal, stacking below the pie where there's always
+  enough room regardless of how many specialties exist.
+- **Pie radii reduced** — `innerRadius` 66 → 50, `outerRadius` 118 → 94 —
+  leaves a horizontal gutter for the legend without the pie touching the
+  edges.
+- **`fontSize` 13 → 12** and `paddingTop: 16`** — tighter legend rows and a
+  little top padding when the legend sits below the chart.
+
+## Key Concepts Learned
+
+| Concept | Explanation |
+|---------|-------------|
+| **Legend reflow** | `layout`/`verticalAlign`/`align` props change the legend box model completely |
+| **Proportional radii** | Smaller inner/outer radius on mobile keeps the donut centered with room for a horizontal legend |
+| **Desktop preservation** | Mobile values are conditionals; desktop path is a no-op |
 
 ---
 

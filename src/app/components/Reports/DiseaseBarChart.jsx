@@ -9,8 +9,11 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import useMediaQuery from "@/app/lib/useMediaQuery";
 
 export default function DiseaseBarChart({ data = [] }) {
+  const isMobile = useMediaQuery("(max-width: 767px)");
+
   if (!data?.length) {
     return (
       <div className="rounded-3xl border border-(--color-border) bg-(--color-surface) p-8 text-center text-light shadow-xl shadow-(color:--color-shadow)">
@@ -23,6 +26,16 @@ export default function DiseaseBarChart({ data = [] }) {
       </div>
     );
   }
+
+  // Responsive chart params: smaller ticks, tighter margins, and shallower
+  // label rotation on narrow screens to prevent overlap.
+  const tick = {
+    fill: "var(--color-text-muted)",
+    fontSize: isMobile ? 10 : 12,
+  };
+  const margin = isMobile
+    ? { top: 16, right: 4, left: -8, bottom: 20 }
+    : { top: 16, right: 12, left: -12, bottom: 12 };
 
   return (
     <div className="rounded-3xl border border-(--color-border) bg-(--color-surface) p-6 shadow-xl shadow-(color:--color-shadow)">
@@ -38,28 +51,26 @@ export default function DiseaseBarChart({ data = [] }) {
       </div>
       <div className="h-80 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={data}
-            margin={{ top: 16, right: 12, left: -12, bottom: 12 }}
-          >
+          <BarChart data={data} margin={margin}>
             <CartesianGrid
               stroke="color-mix(in srgb, var(--color-text-muted) 18%, transparent)"
               vertical={false}
             />
             <XAxis
               dataKey="disease"
-              tick={{ fill: "var(--color-text-muted)", fontSize: 12 }}
+              tick={tick}
               axisLine={false}
               tickLine={false}
               interval={0}
-              angle={-30}
+              angle={isMobile ? -50 : -30}
               textAnchor="end"
-              height={75}
+              height={isMobile ? 90 : 75}
             />
             <YAxis
-              tick={{ fill: "var(--color-text-muted)", fontSize: 12 }}
+              tick={tick}
               axisLine={false}
               tickLine={false}
+              tickCount={5}
             />
             <Tooltip
               contentStyle={{

@@ -71,12 +71,12 @@ export default function MobileNavbar({ isNavbarOpen, setIsNavbarOpen }) {
         />
         <MobileNavbarItem
           title="Reports"
-          route="/reports"
+          route="reports"
           onNavClick={() => setIsNavbarOpen(false)}
         />
         <MobileNavbarItem
           title="Doctors"
-          route="/doctors"
+          route="doctors"
           isAccordionOpen={isAccordionOpen === "doctors"}
           onClick={() => {
             setAccordionOpen((prev) => (prev === "doctors" ? null : "doctors"));
@@ -85,7 +85,7 @@ export default function MobileNavbar({ isNavbarOpen, setIsNavbarOpen }) {
         />
         <MobileNavbarItem
           title="Patients"
-          route="/patients"
+          route="patients"
           isAccordionOpen={isAccordionOpen === "patients"}
           onClick={() => {
             setAccordionOpen((prev) =>
@@ -96,7 +96,7 @@ export default function MobileNavbar({ isNavbarOpen, setIsNavbarOpen }) {
         />
         <MobileNavbarItem
           title="Medicines"
-          route="/medicines"
+          route="medicines"
           isAccordionOpen={isAccordionOpen === "medicines"}
           onClick={() => {
             setAccordionOpen((prev) =>

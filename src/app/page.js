@@ -33,22 +33,24 @@ const faqItems = [
 export default function Home() {
   return (
     <>
-      <div className="mx-auto mt-8 flex w-full max-w-3xl items-start gap-3 rounded-3xl border border-(--color-border) bg-(--color-surface-muted) p-4 text-sm leading-6 text-light shadow-sm md:p-6 md:text-base md:leading-7">
-        <Info
-          className="mt-0.5 h-5 w-5 shrink-0 text-secondary md:h-6 md:w-6"
-          aria-hidden="true"
-        />
-        <div className="space-y-1">
-          <p className="font-semibold text-dark">
-            You are viewing a live demo of this project.
-          </p>
-          <p>
-            Users can create, edit, and delete data at any time, so the
-            displayed information may change.
-          </p>
-          <p>
-            None of the displayed data represents real people or real records.
-          </p>
+      <div className="mx-auto mt-8 px-6 md:px-8">
+        <div className="flex w-full max-w-3xl items-start gap-3 rounded-3xl border border-(--color-border) bg-(--color-surface-muted) p-4 text-sm leading-6 text-light shadow-sm md:p-6 md:text-base md:leading-7">
+          <Info
+            className="mt-0.5 h-5 w-5 shrink-0 text-secondary md:h-6 md:w-6"
+            aria-hidden="true"
+          />
+          <div className="space-y-1">
+            <p className="font-semibold text-dark">
+              You are viewing a live demo of this project.
+            </p>
+            <p>
+              Users can create, edit, and delete data at any time, so the
+              displayed information may change.
+            </p>
+            <p>
+              None of the displayed data represents real people or real records.
+            </p>
+          </div>
         </div>
       </div>
       <header className="flex justify-center py-12">
@@ -62,7 +64,7 @@ export default function Home() {
         />
       </header>
       <main className="flex flex-col items-center gap-16 p-8">
-        <section className="flex max-w-3xl flex-col gap-4 rounded-3xl border border-(--color-border) bg-(--color-surface) px-6 py-6 text-center shadow-[0_18px_70px_var(--color-shadow)] md:gap-8 md:px-10 md:py-10">
+        <section className="flex max-w-3xl flex-col gap-4 rounded-3xl border border-(--color-border) bg-(--color-surface) p-6 md:p-8 text-center shadow-[0_18px_70px_var(--color-shadow)] md:gap-8 md:px-10 md:py-10">
           <h2 className="text-2xl font-bold text-secondary md:text-4xl">
             Our vision
           </h2>
@@ -76,15 +78,15 @@ export default function Home() {
           </p>
         </section>
 
-        <section className="w-full max-w-3xl rounded-3xl border border-(--color-border) bg-(--color-surface-muted) p-12 shadow-[0_20px_60px_var(--color-shadow)] backdrop-blur-xl">
+        <section className="w-full max-w-3xl rounded-3xl border border-(--color-border) bg-(--color-surface-muted) p-6 md:p-12 shadow-[0_20px_60px_var(--color-shadow)] backdrop-blur-xl">
           <div className="mb-6 text-center">
             <p className="text-2xl uppercase tracking-[0.32em] text-secondary">
               FAQ
             </p>
-            <h2 className="mt-3 text-3xl font-bold text-dark">
+            <h2 className="mt-3 text-xl md:text-3xl font-bold text-dark">
               Homayoun Clinic FAQ
             </h2>
-            <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-(--color-text-muted)">
+            <p className="mx-auto mt-3 md:max-w-2xl text-sm md:leading-7 text-(--color-text-muted)">
               Answers to common questions about the clinic, medicine management,
               and patient data.
             </p>

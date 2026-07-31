@@ -50,7 +50,7 @@ export default function Accordion({
                 isOpen ? "max-h-72 opacity-100" : "max-h-0 opacity-0"
               }`}
             >
-              <div className="pe-12 text-sm leading-7 text-(--color-text-muted)">
+              <div className="mt-2 md:pe-12 text-sm md:leading-7 text-(--color-text-muted)">
                 {item.answer}
               </div>
             </div>

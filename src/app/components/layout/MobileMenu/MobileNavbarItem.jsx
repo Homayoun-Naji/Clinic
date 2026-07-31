@@ -22,7 +22,7 @@ export default function MobileNavbarItem({
         {isAccordion ? (
           title
         ) : (
-          <Link href={route} onClick={onNavClick} className="block w-full">
+          <Link href={`/${route}`} onClick={onNavClick} className="block w-full">
             {title}
           </Link>
         )}
